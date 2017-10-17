@@ -1,0 +1,173 @@
+project.version = '0.2-SNAPSHOT'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
+        classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.9'
+        classpath "net.saliman:gradle-cobertura-plugin:2.4.0"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'org.asciidoctor.convert'
+apply plugin: "net.saliman.cobertura"
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://nexus.osoco.es/repository/maven-public'
+    }
+}
+
+ext.targetJavaVersion = JavaVersion.VERSION_1_8
+
+configurations {
+    checkerFrameworkAnnotatedJDK {
+        description = 'a copy of JDK classes with Checker Framework type qualifers inserted'
+    }
+    checkerFramework {
+        description = 'The Checker Framework: custom pluggable types for Java'
+    }
+}
+
+dependencies {
+    compile(
+            'io.github.lukehutch:fast-classpath-scanner:LATEST',
+            'com.amazonaws:aws-lambda-java-core:1.1.0',
+            'com.amazonaws:aws-lambda-java-events:1.1.0',
+            'com.amazonaws:aws-java-sdk-dynamodb:1.11.52',
+            "org.projectlombok:lombok:1.16.12",
+            'com.xebia:jackson-lombok:1.1',
+            'org.elasticsearch.client:rest:5.1.2',
+            'org.apache.httpcomponents:httpcore:4.4.5',
+            'org.apache.httpcomponents:httpcore-nio:4.4.5',
+            'org.apache.httpcomponents:httpasyncclient:4.1.2',
+            'commons-validator:commons-validator:1.6',
+            'com.google.code.gson:gson:2.8.0'
+    )
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.codehaus.groovy:groovy-all:2.4.4'
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    testRuntime "org.slf4j:slf4j-api:1.7.10"
+    testCompile 'info.cukes:cucumber-groovy:1.2.5'
+    testCompile 'info.cukes:cucumber-junit:1.2.5'
+
+    testCompile 'info.cukes:cucumber-picocontainer:1.2.5'
+    testCompile 'org.picocontainer:picocontainer:2.14'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+
+    testCompile 'cglib:cglib-nodep:3.2.4'
+    testCompile 'org.objenesis:objenesis:2.4'
+
+    ext.checkerFrameworkVersion = '2.1.6'
+    ext.jdkVersion = 'jdk8'
+    checkerFrameworkAnnotatedJDK "org.checkerframework:${jdkVersion}:${checkerFrameworkVersion}"
+
+    //    checkerFrameworkJavac "org.checkerframework:compiler:${checkerFrameworkVersion}"
+    checkerFramework "org.checkerframework:checker:${checkerFrameworkVersion}"
+    compile "org.checkerframework:checker-qual:${checkerFrameworkVersion}"
+}
+
+apply plugin: 'maven'
+
+task buildZip(type: Zip) {
+    baseName = "bbva-ats-forms"
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtime
+    }
+}
+
+build.dependsOn buildZip
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+    systemProperties System.getProperties()
+    outputs.upToDateWhen { false }
+}
+
+
+tasks.withType(Test) {
+    reports.html.destination = file("${reporting.baseDir}/${name}")
+}
+
+task generateCukesDoc(type: JavaExec) {
+    classpath buildscript.configurations.classpath
+    main = 'com.github.cukedoctor.CukedoctorMain'
+    args = ['-o', 'build/cucumber/living-specs.adoc',
+            '-p', 'build/reports/cucumber/cucumber.json',
+            '-toc', 'left',
+            '-t', '\"BBVA-ATS-Forms Living Specs\"']
+}
+
+asciidoctor {
+    dependsOn generateCukesDoc
+    sourceDir = file('src/docs')
+    outputDir = file("${buildDir}/docs")
+    separateOutputDirs = true
+    options doctype: 'book'
+
+    System.setProperty("cukedoctor.disable.filter", "true")
+    System.setProperty("cukedoctor.disable.theme", "true")
+
+    backends = ['html5']
+    attributes 'source-highlighter': 'coderay',
+            'coderay-linenums-mode': 'table',
+            icon: 'font',
+            linkattrs: true,
+            encoding: 'utf-8'
+}
+
+asciidoctor.doFirst {
+    copy {
+        from "${buildDir}/cucumber"
+        into "src/docs"
+        include 'living-specs.adoc'
+    }
+}
+
+if (project.hasProperty('doc')) {
+    test.finalizedBy asciidoctor
+}
+
+ allprojects {
+     tasks.withType(JavaCompile).all { JavaCompile compile ->
+         compile.options.compilerArgs = [
+                 '-processor', 'org.checkerframework.checker.nullness.NullnessChecker',
+                 '-processorpath', "${configurations.checkerFramework.asPath}",
+                 // uncomment to turn Checker Framework errors into warnings
+                 '-Awarns',
+                 '-AprintErrorStack',
+                 "-Xbootclasspath/p:${configurations.checkerFrameworkAnnotatedJDK.asPath}"
+         ]
+     }
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+    //    testClassesDir = sourceSets.integrationTest.output.classesDir
+    // classpath = sourceSets.integrationTest.runtimeClasspath
+
+    outputs.upToDateWhen { false }
+}
+
+// apply from: 'integrationTest.gradle'
+
+//check.dependsOn integrationTest
+//integrationTest.mustRunAfter test
