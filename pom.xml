@@ -30,6 +30,49 @@
       <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
     </license>
   </licenses>
+  <developers>
+    <developer>
+      <name>V&iacute;ctor Del Valle</name>
+      <email>victor.delvalle@osoco.es</email>
+      <organization>OSOCO</organization>
+      <organizationUrl>http://www.osoco.es</organizationUrl>
+    </developer>
+    <developer>
+      <name>Jos&eacute; Cranfr&aacute;n</name>
+      <email>jose.canfran@osoco.es</email>
+      <organization>OSOCO</organization>
+      <organizationUrl>http://www.osoco.es</organizationUrl>
+    </developer>
+    <developer>
+      <name>Julio Ripoll</name>
+      <email>julio.ripoll@osoco.es</email>
+      <organization>OSOCO</organization>
+      <organizationUrl>http://www.osoco.es</organizationUrl>
+    </developer>
+    <developer>
+      <name>Rafael Luque</name>
+      <email>rafael.luque@osoco.es</email>
+      <organization>OSOCO</organization>
+      <organizationUrl>http://www.osoco.es</organizationUrl>
+    </developer>
+    <developer>
+      <name>Juan Antonio Cort&eacute;s</name>
+      <email>ja.cortes@osoco.es</email>
+      <organization>OSOCO</organization>
+      <organizationUrl>http://www.osoco.es</organizationUrl>
+    </developer>
+    <developer>
+      <name>Jos&eacute; San Leandro</name>
+      <email>jose.sanleandro@osoco.es</email>
+      <organization>OSOCO</organization>
+      <organizationUrl>http://www.osoco.es</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/osoco/java-logging.git</connection>
+    <developerConnection>scm:git:git@github.com/osoco/java-logging.git</developerConnection>
+    <url>https://github.com/osoco/java-logging/tree/master</url>
+  </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -318,6 +361,9 @@
             <goals>
               <goal>sign</goal>
             </goals>
+            <configuration>
+              <keyname>${gpg.keyname}</keyname>
+            </configuration>
           </execution>
         </executions>
       </plugin>
