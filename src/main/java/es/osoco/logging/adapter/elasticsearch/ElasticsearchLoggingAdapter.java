@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * {@link LoggingAdapter} for ElasticSearch, based on a REST client.
+ * {@link es.osoco.logging.adapter.LoggingAdapter} for ElasticSearch, based on a REST client.
  */
 @EqualsAndHashCode(callSuper=false)
 @Getter
