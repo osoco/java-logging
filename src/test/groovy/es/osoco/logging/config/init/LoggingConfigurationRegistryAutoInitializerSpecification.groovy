@@ -16,9 +16,7 @@ package es.osoco.logging.config.init
 
 import es.osoco.logging.config.LoggingConfigurationRegistry
 import spock.lang.Specification
-import spock.util.mop.ConfineMetaClassChanges
 
-@ConfineMetaClassChanges([System])
 class LoggingConfigurationRegistryAutoInitializerSpecification
         extends Specification {
 

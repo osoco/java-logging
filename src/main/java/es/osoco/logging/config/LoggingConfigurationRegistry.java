@@ -53,8 +53,23 @@ public class LoggingConfigurationRegistry {
      * Default constructor to avoid public instantiation.
      */
     protected LoggingConfigurationRegistry() {
+        scan();
+    }
+
+    /**
+     * Scans the classpath looking for configurations and producers.
+     */
+    protected final void scan() {
         discoverLoggingConfigurations();
         discoverLoggingConfigurationProducers();
+    }
+
+    /**
+     * Cleans up the current configuration.
+     */
+    protected void clean() {
+        immutableGetMap().clear();
+        immutableGetListeners().clear();
     }
 
     /**
@@ -124,7 +139,9 @@ public class LoggingConfigurationRegistry {
      */
     @SuppressWarnings("unchecked")
     public <T extends LoggingConfiguration> T get(final String key) {
-        return (T) immutableGetMap().get(key);
+        final T result = (T) immutableGetMap().get(key);
+
+        return result;
     }
 
     /**
