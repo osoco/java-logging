@@ -71,7 +71,7 @@ logging.info("Use case started");
 
 ## Logging preferences
 
-While the underlying logging configuration are auto-discovered at runtime, you should
+While the underlying logging configuration is auto-discovered at runtime, you should
 specify your preferences. You do so by using the `@LoggingPreferences` annotation either in a method or a class.
 Your preferences will define which logging mechanism will be used, within the execution context they are defined.
 The general use case is to define your preferences in the application's entry point(s).
@@ -129,7 +129,7 @@ public class HttpServerAdapter implements ...
 
 # Design concepts
 
-This library uses two concepts: Logging Configuration, and Logging adapters. Logging Configurations are abstractions to represent required configurations needed by Logging Adapters, but they don't know who uses them. Logging Adapters are the materializations of the `Logging` interface the client uses at runtime.
+This library uses two concepts: Logging Configuration, and Logging Adapters. Logging Configurations are abstractions to represent required configurations needed by Logging Adapters, but they don't know who uses them. Logging Adapters are the materializations of the `Logging` interface the client uses at runtime.
 
 
 ## Logging Configuration
@@ -150,13 +150,13 @@ The first time the library is loaded, it will auto-discover all `@LoggingConfigu
 
 The `LoggingConfigurationRegistry` discovers all child classes of `LoggingConfigurationListener`, and notifies them whenever a new `LoggingConfiguration` is collected.
 
-You can also provide your own logging configuration whenever it's available. For example, the AWS-Lambda `Logger` instance is only available in the context of a Lambda execution. In such cases, you'll need to write your own `LoggingConfigurationProducer` implementation and use it.
+You can also provide your own logging configuration whenever it's available. For example, the AWS-Lambda `Logger` instance is only available in the context of a Lambda execution. In such cases, you'll need to provide a `LoggingConfiguration` yourself.
 For example, in an AWS-Lambda `RequestHandler`, you'd want to call
 ```
 new AwsLambdaLoggingConfigurationProducer().configureLogging(context.getLogger());
 ```
 
-There's no API for `LoggingConfigurationProducer`, since there's no way for the library to automatically discover them (the ones that can be auto-discovered should use the `@LoggingConfigurationProducer` annotation). Your code just needs to call:
+There's no API for `LoggingConfigurationProducer`, since there's no way for the library to automatically discover them (the ones that can be auto-discovered should use the `@LoggingConfigurationProducer` annotation). Fear not. Your code just needs to call:
 
 ```
 LoggingConfigurationRegistry.getInstance().put("your-key", yourLoggingConfiguration);
@@ -170,7 +170,7 @@ Such registry simply maps keys with logging adapter builders. Builders know how 
 
 ## LoggingFactory
 
-The `LoggingFactory` resolves which logging keys are bound to the runtime context, based on the current stack trace. Once that keys (/preferred/ and /fallback/) are known, it creates a composite instance after asking the relevant builders to create the `LoggingAdapter`s. That composite logging then delegates the actual logging calls to the adapters: the log message is broadcasted to all preferred mechanisms. In case any of them fails, the same message is broadcasted to all fallback mechanisms.
+The `LoggingFactory` resolves which logging keys are bound to the runtime context, based on the current stack trace. Once that keys (//preferred// and //fallback//) are known, it creates a composite instance after asking the relevant builders to create the `LoggingAdapter`s. That composite logging then delegates the actual logging calls to the adapters: the log message is broadcasted to all preferred mechanisms. In case any of them fails, the same message is broadcasted to all fallback mechanisms.
 
 # Build from source
 
@@ -188,6 +188,12 @@ Java-Logging uses Spock as testing framework. To run the specifications, run
 
 ```
 mvn test
+```
+
+or
+
+```
+gradle test
 ```
 
 # Contributing
