@@ -61,7 +61,7 @@ import es.osoco.logging.LoggingFactory;
 
 Then, retrieve the `Logging` instance using the `LoggingFactory`:
 ```
-Logging logging = LogFactory.getLogging();
+Logging logging = LogFactory.createLogging();
 ```
 
 Once you have the `Logging` instance, use it for, well, logging:
