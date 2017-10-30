@@ -3,11 +3,27 @@ A (yet another) Logging framework for Java / Groovy.
 
 # Getting Started
 
-This framework provides your application multiple logging capabilities hiding you the details of how it's working internally.
+This framework provides your application multiple logging capabilities, while hiding you the details of how it's working internally.
+
 You express your logging preferences using the `@LoggingPreferences` annotation. Within that execution context, your preferences will be honored.
 To log a message, you just need to call `LoggingFactory.getInstance().createLogging()`. It will return a `Logging` instance which gives you the methods you are expecting: `info(String)`, `debug(String)` and the like.
 
 Besides that, the `Logging` instance also provides you a way to pass additional context information so that the logging mechanism can optionally use it. By calling `Logging#getLoggingContext()`, you get a `LoggingContext`, which is a Map-like API storing the information locally to the thread.
+
+# Why another logging library
+
+This library allows your code to express its logging preferences via annotations, and then use a minimal API.
+By preferences, we mean "if possible, use ElasticSearch and Log4J. If any of them fails, then use SLF4J and System.out".
+
+In practice, we've found that using DDD allowed us to reuse the code in different scenarios. Frequently, those scenarios
+differ in the runtime infrastructure. Some of them use ElasticSearch, some of them delegate logging to CloudWatch (via AWS-Lambda logger).
+So we came up with a solution that has some benefits:
+
+- You declare your logging preferences.
+- You're not bound to any logging framework. Ours is just a thin layer that just resolves your preferences to the logging solutions available at runtime.
+- The logging API is the bare minimum: logging and logging context (for MDC/NDC capabilities).
+- You still use your current logging framework.
+- You still configure your logging as you need.
 
 # Prerequisites
 
