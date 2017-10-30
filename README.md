@@ -134,6 +134,18 @@ The first time the library is loaded, it will auto-discover all `@LoggingConfigu
 
 The `LoggingConfigurationRegistry` discovers all child classes of `LoggingConfigurationListener`, and notifies them whenever a new `LoggingConfiguration` is collected.
 
+You can also provide your own logging configuration whenever it's available. For example, the AWS-Lambda `Logger` instance is only available in the context of a Lambda execution. In such cases, you'll need to write your own `LoggingConfigurationProducer` implementation and use it.
+For example, in an AWS-Lambda `RequestHandler`, you'd want to call
+```
+new AwsLambdaLoggingConfigurationProducer().configureLogging(context.getLogger());
+```
+
+There's no API for `LoggingConfigurationProducer`, since there's no way for the library to automatically discover them (the ones that can be auto-discovered should use the `@LoggingConfigurationProducer` annotation). Your code just needs to call:
+
+```
+LoggingConfigurationRegistry.getInstance().put("your-key", yourLoggingConfiguration);
+```
+
 ## Logging Adapters
 
 The main responsibility of a `LoggingConfigurationListener` is to check if the new `LoggingConfiguration` is meaningful for him. If so, it will create a `LoggingAdapterBuilder` instance, and publish it into the `LoggingAdapterBuilderRegistry`.
@@ -166,11 +178,9 @@ mvn test
 
 Please read CONTRIBUTING.md for details on our code of conduct, and the process for submitting pull requests to us.
 
-# Versioning
-
 # Authors
 
-Shibata team at OSOCO.
+Shibata team at OSOCO. See the `<developers>` section in the Maven `pom.xml`.
 
 # License
 
@@ -180,5 +190,7 @@ This project is licensed under the GPLv3 License - see the LICENSE.md file for d
 
 The idea behind this library arose spontaneously after a refactoring of a DDD project. It used its own AWS-Lambda-based Logging, and it
 modelled it after the ports-and-adapters approach borrowed from hexagonal architectures.
+
 We wanted to reuse that module in other contexts, so we stole the Logging code and started implementing this library.
-However, the design was heavily influenced by Pharo (a Smalltalk dialect we at OSOCO are big fans of), and was made possible thanks to the awesome fast-classpath-scanner library from lukehutch.
+
+The design was heavily influenced by [https://pharo.org](Pharo) (a Smalltalk dialect we at [http://www.osoco.es](OSOCO) are big fans of), and was made possible thanks to the awesome [https://github.com/lukehutch/fast-classpath-scanner](fast-classpath-scanner) library from [https://github.com/lukehutch](lukehutch).
