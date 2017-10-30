@@ -209,4 +209,4 @@ modelled it after the ports-and-adapters approach borrowed from hexagonal archit
 
 We wanted to reuse that module in other contexts, so we stole the Logging code and started implementing this library.
 
-The design was heavily influenced by [https://pharo.org](Pharo) (a Smalltalk dialect we at [http://www.osoco.es](OSOCO) are big fans of), and was made possible thanks to the awesome [https://github.com/lukehutch/fast-classpath-scanner](fast-classpath-scanner) library from [https://github.com/lukehutch](lukehutch).
+The design was heavily influenced by [Pharo](https://pharo.org] (a Smalltalk dialect we at [OSOCO](http://www.osoco.es) are big fans of), and was made possible thanks to the awesome [fast-classpath-scanner](https://github.com/lukehutch/fast-classpath-scanner) library from [lukehutch](https://github.com/lukehutch).
