@@ -170,7 +170,7 @@ Such registry simply maps keys with logging adapter builders. Builders know how 
 
 ## LoggingFactory
 
-The `LoggingFactory` resolves which logging keys are bound to the runtime context, based on the current stack trace. Once that keys (//preferred// and //fallback//) are known, it creates a composite instance after asking the relevant builders to create the `LoggingAdapter`s. That composite logging then delegates the actual logging calls to the adapters: the log message is broadcasted to all preferred mechanisms. In case any of them fails, the same message is broadcasted to all fallback mechanisms.
+The `LoggingFactory` resolves which logging keys are bound to the runtime context, based on the current stack trace. Once that keys (*preferred* and *fallback*) are known, it creates a composite instance after asking the relevant builders to create the `LoggingAdapter`s. That composite logging then delegates the actual logging calls to the adapters: the log message is broadcasted to all preferred mechanisms. In case any of them fails, the same message is broadcasted to all fallback mechanisms.
 
 # Build from source
 
