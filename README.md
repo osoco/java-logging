@@ -27,10 +27,11 @@ So we came up with a solution that has some benefits:
 
 # Runtime flags
 
-By default, the framework will automatically discover logging configurations and producer implementations. Additionally, it finds out which logging preferences are defined, based on the methods in the stack. In some scenarios, such as AWS Lambda, that behavior is undesirable. You can switch off using the following environment variables / system properties:
-- AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS / automatically.discover.logging.configurations: Set to `false` to disable runtime discovery of logging configurations.
-- AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS / automatically.discover.logging.annotations: Set to `false` to disable runtime discovery of logging annotations.
-- AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS / automatically.discover.logging.configuration.producers: Set to `false` to disable runtime discovery of logging configuration producers.
+By default, the framework will automatically discover logging configurations and producer implementations. Additionally, it finds out which logging preferences are defined, based on the methods in the stack. In some scenarios, such as AWS Lambda, that behavior is undesirable. You can switch them off using the following environment variables / system properties:
+- *AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS* / *automatically.discover.logging.configurations*: Set to `false` to disable runtime discovery of logging configurations.
+- *AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS* / *automatically.discover.logging.annotations*: Set to `false` to disable runtime discovery of logging annotations.
+- *AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS* / *automatically.discover.logging.configuration.producers*: Set to `false` to disable runtime discovery of logging configuration producers.
+- *DEFAULT_PREFERRED_LOGGING* / *default.preferred.logging*: Set to `aws-lambda` in your AWS Lambda functions.
 
 
 # Prerequisites
