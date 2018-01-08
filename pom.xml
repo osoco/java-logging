@@ -19,7 +19,7 @@
 
   <groupId>es.osoco.logging</groupId>
   <artifactId>java-logging</artifactId>
-  <version>0.2</version>
+  <version>0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Java Logging</name>
   <description>Logging for Java projects</description>
@@ -350,7 +350,7 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
-      <!--plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
         <version>1.5</version>
@@ -377,7 +377,7 @@
           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
-      </plugin-->
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -436,10 +436,12 @@
 
   <distributionManagement>
     <snapshotRepository>
+      <!--id>sonatype-nexus-snapshots</id-->
       <id>ossrh</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
     <repository>
+      <!--id>sonatype-nexus-staging</id-->
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
