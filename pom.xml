@@ -19,7 +19,7 @@
 
   <groupId>es.osoco.logging</groupId>
   <artifactId>java-logging</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.2</version>
   <packaging>jar</packaging>
   <name>Java Logging</name>
   <description>Logging for Java projects</description>
