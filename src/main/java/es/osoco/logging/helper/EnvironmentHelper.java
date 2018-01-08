@@ -49,6 +49,7 @@ public class EnvironmentHelper {
      */
     public String retrieveStringFromSystemPropertyOrEnvironmentVariableOrElse(
         final String sysPropName, final String envVarName, final String defaultValue) {
+
         final String result;
 
         final String sysProp = System.getProperty(sysPropName);
@@ -63,6 +64,45 @@ public class EnvironmentHelper {
             }
         } else {
             result = sysProp;
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Retrieves a String value from System property (-DsysPropName). If it's not found,
+     * try the environment variable envVarName. If it's still not found, return the defaultValue.
+     * @param sysPropName the system property name.
+     * @param envVarName the environment variable name.
+     * @param defaultValue the default value.
+     * @return such value.
+     */
+    public String[] retrieveStringArrayFromSystemPropertyOrEnvironmentVariableOrElse(
+        final String sysPropName, final String envVarName, final String[] defaultValue) {
+
+        final String[] result;
+
+        final String aux;
+
+        final String sysProp = System.getProperty(sysPropName);
+
+        if (sysProp == null) {
+            final String envVar = System.getenv(envVarName);
+
+            if (envVar == null) {
+                aux = null;
+            } else {
+                aux = envVar;
+            }
+        } else {
+            aux = sysProp;
+        }
+
+        if (aux == null) {
+            result = defaultValue;
+        } else {
+            result = aux.split(",");
         }
 
         return result;
@@ -91,6 +131,31 @@ public class EnvironmentHelper {
             } catch (final NumberFormatException invalidInt) {
                 result = defaultValue;
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Retrieves a boolean value from System property (-DsysPropName). If it's not found,
+     * try the environment variable envVarName. If it's still not found, return the defaultValue.
+     * @param sysPropName the system property name.
+     * @param envVarName the environment variable name.
+     * @param defaultValue the default value.
+     * @return such value.
+     */
+    public boolean retrieveBooleanFromSystemPropertyOrEnvironmentVariableOrElse(
+        final String sysPropName, final String envVarName, final boolean defaultValue) {
+
+        final boolean result;
+
+        final String value =
+            retrieveStringFromSystemPropertyOrEnvironmentVariableOrElse(sysPropName, envVarName, null);
+
+        if (value == null) {
+            result = defaultValue;
+        } else {
+            result = Boolean.valueOf(value);
         }
 
         return result;

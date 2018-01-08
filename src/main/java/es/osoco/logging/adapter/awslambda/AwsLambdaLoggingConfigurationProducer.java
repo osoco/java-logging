@@ -45,6 +45,7 @@ public class AwsLambdaLoggingConfigurationProducer {
      */
     @SuppressWarnings("unused")
     public void configureLogging(final String key, final LambdaLogger logger) {
-        LoggingConfigurationRegistry.getInstance().put(key, new AwsLambdaLoggingConfiguration(logger));
+        AwsLambdaLoggingConfiguration config = new AwsLambdaLoggingConfiguration(logger);
+        LoggingConfigurationRegistry.getInstance().put(key, config);
     }
 }

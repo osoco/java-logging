@@ -15,6 +15,7 @@
 package es.osoco.logging.config;
 
 import es.osoco.logging.annotations.LoggingConfigurationProducer;
+import es.osoco.logging.helper.EnvironmentHelper;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.ImplementingClassMatchProcessor;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.MethodAnnotationMatchProcessor;
@@ -28,10 +29,53 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Registry for {@link LoggingConfiguration}s.
+ * <p>Registry for {@link LoggingConfiguration}s.</p>
+ * <p>It will automatically discover logging configurations, unless
+ * either "automatically.discover.logging.configurations" property or
+ * "AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS" environment variable is set to "false".</p>
+ * <p>In that case, only logging configurations provided explicitly will be available.</p>
+ * <p>Similarly, it will automatically discover logging configuration producers, unless
+ * either "automatically.discover.logging.configuration.producers" property or
+ * "AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS" environment variable is set to "false".</p>
+ * <p>In that case, only logging configuration producers explicitly provided will be available.</p>
  */
 @SuppressWarnings("unused")
 public class LoggingConfigurationRegistry {
+
+    /**
+     * The property to enable or disable automatically discovering of logging configurations.
+     */
+    public static final String AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS_PROPERTY =
+        "automatically.discover.logging.configurations";
+
+    /**
+     * The environment variable to enable or disable automatically discovering of logging configurations.
+     */
+    public static final String AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS_ENVVAR =
+        "AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS";
+
+    /**
+     * The default behavior for automatically discovering of logging configurations.
+     */
+    public static final boolean DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS = true;
+
+    /**
+     * The property to enable or disable automatically discovering of logging configuration producers.
+     */
+    public static final String AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS_PROPERTY =
+        "automatically.discover.logging.configuration.producers";
+
+    /**
+     * The environment variable to enable or disable automatically discovering of logging configuration producers.
+     */
+    public static final String AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS_ENVVAR =
+        "AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS";
+
+    /**
+     * The default behavior for automatically discovering of logging configuration producers.
+     */
+    public static final boolean DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS = true;
+
     /**
      * The underlying logging configuration map.
      */
@@ -190,7 +234,21 @@ public class LoggingConfigurationRegistry {
      * Scans the classpath for methods with {@code @LoggingConfigurationProducer} annotations.
      */
     protected final void discoverLoggingConfigurations() {
-        new LoggingConfigurationListenerDiscoverer().discover(this);
+        if (discoverLoggingConfigurationsEnabled()) {
+            new LoggingConfigurationListenerDiscoverer().discover(this);
+        }
+    }
+
+    /**
+     * Checks whether we are allowed to automatically discover the logging configurations.
+     * @return {@code true} in such case.
+     */
+    protected boolean discoverLoggingConfigurationsEnabled() {
+        return
+            EnvironmentHelper.getInstance().retrieveBooleanFromSystemPropertyOrEnvironmentVariableOrElse(
+                AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS_PROPERTY,
+                AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS_ENVVAR,
+                DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS);
     }
 
     /**
@@ -220,11 +278,26 @@ public class LoggingConfigurationRegistry {
      * Scans the classpath for {@link LoggingConfigurationListener}s.
      */
     protected final void discoverLoggingConfigurationProducers() {
-        final LoggingConfigurationProducerAnnotationMatchProcessor processor =
-            new LoggingConfigurationProducerAnnotationMatchProcessor(this);
-        final FastClasspathScanner scanner = new FastClasspathScanner();
-        scanner.matchClassesWithMethodAnnotation(LoggingConfigurationProducer.class, processor);
-        scanner.scan();
+        if (discoverLoggingConfigurationProducersEnabled()) {
+            final LoggingConfigurationProducerAnnotationMatchProcessor processor =
+                new LoggingConfigurationProducerAnnotationMatchProcessor(this);
+            final FastClasspathScanner scanner = new FastClasspathScanner();
+            scanner.matchClassesWithMethodAnnotation(LoggingConfigurationProducer.class, processor);
+            scanner.scan();
+        }
+    }
+
+
+    /**
+     * Checks whether we are allowed to automatically discover the logging configuration producers.
+     * @return {@code true} in such case.
+     */
+    protected boolean discoverLoggingConfigurationProducersEnabled() {
+        return
+            EnvironmentHelper.getInstance().retrieveBooleanFromSystemPropertyOrEnvironmentVariableOrElse(
+                AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS_PROPERTY,
+                AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS_ENVVAR,
+                DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS);
     }
 
     /**

@@ -14,6 +14,7 @@
 */
 package es.osoco.logging.preferences;
 
+import es.osoco.logging.helper.EnvironmentHelper;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.ClassAnnotationMatchProcessor;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.MethodAnnotationMatchProcessor;
@@ -26,7 +27,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Finds out the logging preferences in the context of the caller.
+ * <p>Finds out the logging preferences in the context of the caller.</p>
+ * <p>I will traverse the stack trace for any logging annotation, unless either
+ * "automatically.discover.logging.annotations" property or
+ * "AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS" environment variable is set to "false".</p>
+ * <p>In that case, the default preferred and default fallback mechanisms will be used.</p>
+ * <p>Such mechanisms are "System.out" and "System.err" respectively, by default, but can be
+ * overridden using "default.preferred.logging" property or "DEFAULT_PREFERRED_LOGGING"
+ * environment variable.</p>
+ * <p>Notice the default preferred and default fallback mechanisms are used also when
+ * no annotations are available in the Thread's stack trace.</p>
  */
 public class LoggingPrefs {
 
@@ -36,9 +46,50 @@ public class LoggingPrefs {
     static final String[] DEFAULT_PREFERRED = new String[] { "System.out" };
 
     /**
-     * The default fallback logging (System.out).
+     * The default fallback logging (System.err).
      */
-    static final String[] DEFAULT_FALLBACK = new String[] { "System.out" };
+    static final String[] DEFAULT_FALLBACK = new String[] { "System.err" };
+
+    /**
+     * The property to enable or disable automatically discovering of logging annotations.
+     */
+    public static final String AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS_PROPERTY =
+        "automatically.discover.logging.annotations";
+
+    /**
+     * The environment variable to enable or disable automatically discovering of logging annotations.
+     */
+    public static final String AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS_ENVVAR =
+        "AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS";
+
+    /**
+     * The default behavior for automatically discovering of logging annotations.
+     */
+    public static final boolean DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS = true;
+
+    /**
+     * The property to override the preferred logging mechanism.
+     */
+    public static final String DEFAULT_PREFERRED_LOGGING_PROPERTY =
+        "default.preferred.logging";
+
+    /**
+     * The environment variable to override the preferred logging mechanism.
+     */
+    public static final String DEFAULT_PREFERRED_LOGGING_ENVVAR =
+        "DEFAULT_PREFERRED_LOGGING";
+
+    /**
+     * The property to override the fallback logging mechanism.
+     */
+    public static final String DEFAULT_FALLBACK_LOGGING_PROPERTY =
+        "default.fallback.logging";
+
+    /**
+     * The environment variable to override the fallback logging mechanism.
+     */
+    public static final String DEFAULT_FALLBACK_LOGGING_ENVVAR =
+        "DEFAULT_FALLBACK_LOGGING";
 
     /**
      * The discovered per-class preferred logging.
@@ -121,14 +172,54 @@ public class LoggingPrefs {
      * Scans the classpath for {@code @LoggingPrefs} annotations.
      */
     protected final void discoverLoggingAnnotations() {
-        final ClassLoggingAnnotationMatchProcessor classProcessor =
-            new ClassLoggingAnnotationMatchProcessor(this);
-        final MethodLoggingAnnotationMatchProcessor methodProcessor =
-            new MethodLoggingAnnotationMatchProcessor(this);
-        final FastClasspathScanner scanner = new FastClasspathScanner();
-        scanner.matchClassesWithMethodAnnotation(es.osoco.logging.annotations.LoggingPreferences.class, methodProcessor);
-        scanner.matchClassesWithAnnotation(es.osoco.logging.annotations.LoggingPreferences.class, classProcessor);
-        scanner.scan();
+        if (discoverLoggingAnnotationsEnabled()) {
+            final ClassLoggingAnnotationMatchProcessor classProcessor =
+                new ClassLoggingAnnotationMatchProcessor(this);
+            final MethodLoggingAnnotationMatchProcessor methodProcessor =
+                new MethodLoggingAnnotationMatchProcessor(this);
+            final FastClasspathScanner scanner = new FastClasspathScanner();
+            scanner.matchClassesWithMethodAnnotation(
+                es.osoco.logging.annotations.LoggingPreferences.class, methodProcessor);
+            scanner.matchClassesWithAnnotation(
+                es.osoco.logging.annotations.LoggingPreferences.class, classProcessor);
+            scanner.scan();
+        }
+    }
+
+    /**
+     * Checks whether we are allowed to automatically discover the logging annotations.
+     * @return {@code true} in such case.
+     */
+    protected boolean discoverLoggingAnnotationsEnabled() {
+        return
+            EnvironmentHelper.getInstance().retrieveBooleanFromSystemPropertyOrEnvironmentVariableOrElse(
+                AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS_PROPERTY,
+                AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS_ENVVAR,
+                DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS);
+    }
+
+    /**
+     * Retrieves the default preferred mechanism.
+     * @return such mechanism.
+     */
+    protected String[] getDefaultPreferred() {
+        return
+            EnvironmentHelper.getInstance().retrieveStringArrayFromSystemPropertyOrEnvironmentVariableOrElse(
+                DEFAULT_PREFERRED_LOGGING_PROPERTY,
+                DEFAULT_PREFERRED_LOGGING_ENVVAR,
+                DEFAULT_PREFERRED);
+    }
+
+    /**
+     * Retrieves the default fallback mechanism.
+     * @return such mechanism.
+     */
+    protected String[] getDefaultFallback() {
+        return
+            EnvironmentHelper.getInstance().retrieveStringArrayFromSystemPropertyOrEnvironmentVariableOrElse(
+                DEFAULT_FALLBACK_LOGGING_PROPERTY,
+                DEFAULT_FALLBACK_LOGGING_ENVVAR,
+                DEFAULT_FALLBACK);
     }
 
     /**
@@ -136,7 +227,14 @@ public class LoggingPrefs {
      * @return the ordered array of {@link es.osoco.logging.adapter.LoggingAdapterBuilderRegistry} keys.
      */
     public String[] myPreferredLogging() {
-        return findPreferred(Thread.currentThread().getStackTrace());
+        final String[] result;
+        if (discoverLoggingAnnotationsEnabled()) {
+            result = findPreferred(Thread.currentThread().getStackTrace());
+        } else {
+            result = getDefaultPreferred();
+        }
+
+        return result;
     }
 
     /**
@@ -144,7 +242,14 @@ public class LoggingPrefs {
      * @return the ordered array of {@link es.osoco.logging.adapter.LoggingAdapterBuilderRegistry} keys.
      */
     public String[] myFallbackLogging() {
-        return findFallback(Thread.currentThread().getStackTrace());
+        final String[] result;
+        if (discoverLoggingAnnotationsEnabled()) {
+            result = findFallback(Thread.currentThread().getStackTrace());
+        } else {
+            result = getDefaultFallback();
+        }
+
+        return result;
     }
 
     /**
@@ -208,7 +313,7 @@ public class LoggingPrefs {
      * @return the preferred logging keys.
      */
     protected String[] findPreferred(final StackTraceElement[] stackTrace) {
-        return find(stackTrace, getClassPreferred(), getMethodPreferred(), DEFAULT_PREFERRED);
+        return find(stackTrace, getClassPreferred(), getMethodPreferred(), getDefaultPreferred());
     }
 
     /**
@@ -217,7 +322,7 @@ public class LoggingPrefs {
      * @return the fallback logging keys.
      */
     protected String[] findFallback(final StackTraceElement[] stackTrace) {
-        return find(stackTrace, getClassFallback(), getMethodFallback(), DEFAULT_FALLBACK);
+        return find(stackTrace, getClassFallback(), getMethodFallback(), getDefaultFallback());
     }
 
     /**
