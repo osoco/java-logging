@@ -294,16 +294,16 @@
         <executions>
           <execution>
             <id>bundle-sources</id>
-            <phase>package</phase>
+            <!--phase>package</phase-->
             <goals>
               <!-- produce source artifact for main project sources -->
-              <goal>jar-no-fork</goal>
+              <goal>jar</goal>
             </goals>
           </execution>
           <execution>
             <phase>package</phase>
             <id>attach-sources</id>
-            <goals><goal>jar-no-fork</goal></goals>
+            <goals><goal>jar</goal></goals>
           </execution>
         </executions>
       </plugin>
@@ -321,7 +321,7 @@
         </configuration>
         <executions>
           <execution>
-            <phase>deploy</phase>
+            <!--phase>deploy</phase-->
             <id>attach-javadocs</id>
             <goals><goal>jar</goal></goals>
           </execution>

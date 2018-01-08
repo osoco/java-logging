@@ -25,6 +25,14 @@ So we came up with a solution that has some benefits:
 - You still use your current logging framework.
 - You still configure your logging as you need.
 
+# Runtime flags
+
+By default, the framework will automatically discover logging configurations and producer implementations. Additionally, it finds out which logging preferences are defined, based on the methods in the stack. In some scenarios, such as AWS Lambda, that behavior is undesirable. You can switch off using the following environment variables / system properties:
+- AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS / automatically.discover.logging.configurations: Set to `false` to disable runtime discovery of logging configurations.
+- AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS / automatically.discover.logging.annotations: Set to `false` to disable runtime discovery of logging annotations.
+- AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS / automatically.discover.logging.configuration.producers: Set to `false` to disable runtime discovery of logging configuration producers.
+
+
 # Prerequisites
 
 First, add Java-Logging as dependency in your `pom.xml` or `build.gradle`.
@@ -37,7 +45,7 @@ The dependency is already in maven-central. Just add the dependency to your `pom
 <dependency>
   <groupId>es.osoco.logging</groupId>
   <artifactId>java-logging</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
 </dependency>
 ```
 
@@ -47,7 +55,7 @@ Similarly, the Gradle coordinates are:
 
 ```
 dependencies {
-    compile(es.osoco.logging:java-logging:0.1)
+    compile(es.osoco.logging:java-logging:0.2)
 }
 ```
 
