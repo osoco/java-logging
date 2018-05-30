@@ -68,6 +68,11 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
     private boolean traceEnabled;
 
     /**
+     * Whether the log levels have been customized explicitly.
+     */
+    private boolean levelsCustomized;
+
+    /**
      * Creates a new {@link LoggingAdapter} with given configuration.
      * @param config the {@link LoggingConfiguration}.
      */
@@ -158,13 +163,23 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
      * @param flag the new setting.
      */
     @SuppressWarnings("unused")
-    protected void setErrorEnabled(final boolean flag) {
+    public void setErrorEnabled(final boolean flag) {
         this.errorEnabled = flag;
     }
 
     @Override
     public boolean isErrorEnabled() {
-        return this.errorEnabled;
+        return isErrorEnabled(getLevelsCustomized(), getLoggingConfiguration());
+    }
+
+    /**
+     * Checks whether the error level is enabled or not.
+     * @param customized whether the log levels have been customized explicitly or not.
+     * @param conf the {@link LoggingConfiguration}
+     * @return such behavior.
+     */
+    protected boolean isErrorEnabled(final boolean customized, final LoggingConfiguration conf) {
+        return (this.errorEnabled && customized) || conf.isErrorEnabledByDefault();
     }
 
     /**
@@ -172,13 +187,23 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
      * @param flag the new setting.
      */
     @SuppressWarnings("unused")
-    protected void setWarnEnabled(final boolean flag) {
+    public void setWarnEnabled(final boolean flag) {
         this.warnEnabled = flag;
     }
 
     @Override
     public boolean isWarnEnabled() {
-        return this.warnEnabled;
+        return isWarnEnabled(getLevelsCustomized(), getLoggingConfiguration());
+    }
+
+    /**
+     * Checks whether the warn level is enabled or not.
+     * @param customized whether the log levels have been customized explicitly or not.
+     * @param conf the {@link LoggingConfiguration}
+     * @return such behavior.
+     */
+    protected boolean isWarnEnabled(final boolean customized, final LoggingConfiguration conf) {
+        return (this.warnEnabled && customized) || conf.isWarnEnabledByDefault();
     }
 
     /**
@@ -186,13 +211,24 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
      * @param flag the new setting.
      */
     @SuppressWarnings("unused")
-    protected void setInfoEnabled(final boolean flag) {
+    @Override
+    public void setInfoEnabled(final boolean flag) {
         this.infoEnabled = flag;
     }
 
     @Override
     public boolean isInfoEnabled() {
-        return this.infoEnabled;
+        return isInfoEnabled(getLevelsCustomized(), getLoggingConfiguration());
+    }
+
+    /**
+     * Checks whether the info level is enabled or not.
+     * @param customized whether the log levels have been customized explicitly or not.
+     * @param conf the {@link LoggingConfiguration}
+     * @return such behavior.
+     */
+    protected boolean isInfoEnabled(final boolean customized, final LoggingConfiguration conf) {
+        return (this.infoEnabled && customized) || conf.isInfoEnabledByDefault();
     }
 
     /**
@@ -200,13 +236,24 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
      * @param flag the new setting.
      */
     @SuppressWarnings("unused")
-    protected void setDebugEnabled(final boolean flag) {
+    @Override
+    public void setDebugEnabled(final boolean flag) {
         this.debugEnabled = flag;
     }
 
     @Override
     public boolean isDebugEnabled() {
-        return this.debugEnabled;
+        return isDebugEnabled(getLevelsCustomized(), getLoggingConfiguration());
+    }
+
+    /**
+     * Checks whether the debug level is enabled or not.
+     * @param customized whether the log levels have been customized explicitly or not.
+     * @param conf the {@link LoggingConfiguration}
+     * @return such behavior.
+     */
+    protected boolean isDebugEnabled(final boolean customized, final LoggingConfiguration conf) {
+        return (this.debugEnabled && customized) || conf.isDebugEnabledByDefault();
     }
 
     /**
@@ -214,13 +261,24 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
      * @param flag the new setting.
      */
     @SuppressWarnings("unused")
-    protected void setTraceEnabled(final boolean flag) {
+    @Override
+    public void setTraceEnabled(final boolean flag) {
         this.traceEnabled = flag;
     }
 
     @Override
     public boolean isTraceEnabled() {
-        return this.traceEnabled;
+        return isTraceEnabled(getLevelsCustomized(), getLoggingConfiguration());
+    }
+
+    /**
+     * Checks whether the trace level is enabled or not.
+     * @param customized whether the log levels have been customized explicitly or not.
+     * @param conf the {@link LoggingConfiguration}
+     * @return such behavior.
+     */
+    protected boolean isTraceEnabled(final boolean customized, final LoggingConfiguration conf) {
+        return (this.traceEnabled && customized) || conf.isTraceEnabledByDefault();
     }
 
     @Override
@@ -228,6 +286,22 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
         if (isErrorEnabled()) {
             logError(msg);
         }
+    }
+
+    /**
+     * Specifies whether the log levels have been customized or not.
+     * @param flag such information.
+     */
+    protected void setLevelsCustomized(final boolean flag) {
+        this.levelsCustomized = flag;
+    }
+
+    /**
+     * Retrieves whether the log levels have been customized or not.
+     * @return such information.
+     */
+    public boolean getLevelsCustomized() {
+        return this.levelsCustomized;
     }
 
     /**

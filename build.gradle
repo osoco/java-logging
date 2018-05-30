@@ -12,7 +12,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-project.version = '0.3-SNAPSHOT'
+project.version = '0.3'
 
 buildscript {
     repositories {
@@ -50,7 +50,7 @@ configurations {
 
 dependencies {
     compile(
-            'io.github.lukehutch:fast-classpath-scanner:LATEST',
+            'io.github.lukehutch:fast-classpath-scanner:2.20.2',
             'com.amazonaws:aws-lambda-java-core:1.1.0',
             'com.amazonaws:aws-lambda-java-events:1.1.0',
             'com.amazonaws:aws-java-sdk-dynamodb:1.11.52',
@@ -101,7 +101,7 @@ task buildZip(type: Zip) {
 build.dependsOn buildZip
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.1'
+    gradleVersion = '4.7'
 }
 
 test {
@@ -175,13 +175,6 @@ test {
         showStandardStreams = true
         exceptionFormat = 'full'
     }
-    //    testClassesDir = sourceSets.integrationTest.output.classesDir
-    // classpath = sourceSets.integrationTest.runtimeClasspath
 
     outputs.upToDateWhen { false }
 }
-
-// apply from: 'integrationTest.gradle'
-
-//check.dependsOn integrationTest
-//integrationTest.mustRunAfter test

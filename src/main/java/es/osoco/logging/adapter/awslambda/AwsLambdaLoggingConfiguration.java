@@ -27,8 +27,6 @@ import lombok.ToString;
 public class AwsLambdaLoggingConfiguration
     implements LoggingConfiguration {
 
-    public static AwsLambdaLoggingConfiguration REMOVEME;
-
     /**
      * The AWS lambda logger.
      */
@@ -40,7 +38,6 @@ public class AwsLambdaLoggingConfiguration
      */
     public AwsLambdaLoggingConfiguration(final LambdaLogger logger) {
         immutableSetLambdaLogger(logger);
-        REMOVEME = this;
     }
 
     /**

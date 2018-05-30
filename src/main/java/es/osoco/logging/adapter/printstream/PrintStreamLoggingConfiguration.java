@@ -106,4 +106,14 @@ public class PrintStreamLoggingConfiguration
     public PrintStream getPrintStream() {
         return immutableGetPrintStream();
     }
+
+    @Override
+    public boolean isWarnEnabledByDefault() {
+        return (System.err == null) || (!System.err.equals(getPrintStream()));
+    }
+
+    @Override
+    public boolean isInfoEnabledByDefault() {
+        return (System.err == null) || (!System.err.equals(getPrintStream()));
+    }
 }

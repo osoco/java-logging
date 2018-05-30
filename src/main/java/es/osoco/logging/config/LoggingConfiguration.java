@@ -23,4 +23,44 @@ public interface LoggingConfiguration {
      * @return such information.
      */
     String getRegistryKey();
+
+    /**
+     * Returns whether the "error" level is enabled by default.
+     * @return such behavior.
+     */
+    default boolean isErrorEnabledByDefault() {
+        return true;
+    }
+
+    /**
+     * Returns whether the "warn" level is enabled by default.
+     * @return such behavior.
+     */
+    default boolean isWarnEnabledByDefault() {
+        return true;
+    }
+
+    /**
+     * Returns whether the "info" level is enabled by default.
+     * @return such behavior.
+     */
+    default boolean isInfoEnabledByDefault() {
+        return true;
+    }
+
+    /**
+     * Returns whether the "debug" level is enabled by default.
+     * @return such behavior.
+     */
+    default boolean isDebugEnabledByDefault() {
+        return false;
+    }
+
+    /**
+     * Returns whether the "trace" level is enabled by default.
+     * @return such behavior.
+     */
+    default boolean isTraceEnabledByDefault() {
+        return false;
+    }
 }

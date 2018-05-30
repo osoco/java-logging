@@ -32,10 +32,22 @@ public interface Logging {
     boolean isErrorEnabled();
 
     /**
+     * Enables or disables the "error" level.
+     * @param flag the flag.
+     */
+    void setErrorEnabled(boolean flag);
+
+    /**
      * Logs a "warn" message.
      * @param msg the message.
      */
     void warn(String msg);
+
+    /**
+     * Enables or disables the "warn" level.
+     * @param flag the flag.
+     */
+    void setWarnEnabled(boolean flag);
 
     /**
      * Checks whether "warn" logging is enabled.
@@ -56,6 +68,12 @@ public interface Logging {
     boolean isInfoEnabled();
 
     /**
+     * Enables or disables the "info" level.
+     * @param flag the flag.
+     */
+    void setInfoEnabled(boolean flag);
+
+    /**
      * Logs a "debug" message.
      * @param msg the message.
      */
@@ -68,6 +86,12 @@ public interface Logging {
     boolean isDebugEnabled();
 
     /**
+     * Enables or disables the "debug" level.
+     * @param flag the flag.
+     */
+    void setDebugEnabled(boolean flag);
+
+    /**
      * Logs a "trace" message.
      * @param msg the message.
      */
@@ -78,6 +102,12 @@ public interface Logging {
      * @return such information.
      */
     boolean isTraceEnabled();
+
+    /**
+     * Enables or disables the "trace" level.
+     * @param flag the flag.
+     */
+    void setTraceEnabled(boolean flag);
 
     /**
      * Retrieves the {@link LoggingContext}.

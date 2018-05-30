@@ -157,6 +157,13 @@ public class CompositeLogging
     }
 
     @Override
+    public void setErrorEnabled(final boolean flag) {
+        for (LoggingAdapter preferred: getPreferred()) {
+            preferred.setErrorEnabled(flag);
+        }
+    }
+
+    @Override
     public void warn(final String msg) {
         log(msg, new LoggingWarnCall());
     }
@@ -164,6 +171,13 @@ public class CompositeLogging
     @Override
     public boolean isWarnEnabled() {
         return isEnabled(new LoggingWarnCall());
+    }
+
+    @Override
+    public void setWarnEnabled(final boolean flag) {
+        for (LoggingAdapter preferred: getPreferred()) {
+            preferred.setWarnEnabled(flag);
+        }
     }
 
     @Override
@@ -177,6 +191,13 @@ public class CompositeLogging
     }
 
     @Override
+    public void setInfoEnabled(final boolean flag) {
+        for (LoggingAdapter preferred: getPreferred()) {
+            preferred.setInfoEnabled(flag);
+        }
+    }
+
+    @Override
     public void debug(final String msg) {
         log(msg, new LoggingDebugCall());
     }
@@ -187,6 +208,13 @@ public class CompositeLogging
     }
 
     @Override
+    public void setDebugEnabled(final boolean flag) {
+        for (LoggingAdapter preferred: getPreferred()) {
+            preferred.setDebugEnabled(flag);
+        }
+    }
+
+    @Override
     public void trace(final String msg) {
         log(msg, new LoggingTraceCall());
     }
@@ -194,6 +222,13 @@ public class CompositeLogging
     @Override
     public boolean isTraceEnabled() {
         return isEnabled(new LoggingTraceCall());
+    }
+
+    @Override
+    public void setTraceEnabled(final boolean flag) {
+        for (LoggingAdapter preferred: getPreferred()) {
+            preferred.setTraceEnabled(flag);
+        }
     }
 
     @Override

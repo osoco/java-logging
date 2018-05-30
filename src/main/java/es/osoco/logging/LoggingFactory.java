@@ -17,6 +17,7 @@ package es.osoco.logging;
 import es.osoco.logging.adapter.LoggingAdapter;
 import es.osoco.logging.adapter.LoggingAdapterBuilder;
 import es.osoco.logging.adapter.LoggingAdapterBuilderRegistry;
+import es.osoco.logging.config.LoggingConfigurationRegistry;
 import es.osoco.logging.impl.CompositeLogging;
 import es.osoco.logging.preferences.LoggingPrefs;
 
@@ -51,7 +52,15 @@ public class LoggingFactory {
      * @return such instance.
      */
     public Logging createLogging() {
+        ensureLoggingConfigurationRegistryInitialized();
         return createLogging(LoggingPrefs.getInstance(), LoggingAdapterBuilderRegistry.getInstance());
+    }
+
+    /**
+     * Ensures the {@link LoggingConfigurationRegistry} is initialized already.
+     */
+    protected void ensureLoggingConfigurationRegistryInitialized() {
+        LoggingConfigurationRegistry.getInstance();
     }
 
     /**
