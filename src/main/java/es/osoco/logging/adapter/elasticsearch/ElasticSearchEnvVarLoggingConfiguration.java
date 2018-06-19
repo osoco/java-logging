@@ -14,9 +14,12 @@
 */
 package es.osoco.logging.adapter.elasticsearch;
 
-import es.osoco.logging.config.LoggingConfiguration;
+import es.osoco.logging.adapter.AbstractLoggingConfiguration;
 import es.osoco.logging.annotations.LoggingConfigurationProducer;
+import es.osoco.logging.config.LoggingConfiguration;
 import es.osoco.logging.helper.EnvironmentHelper;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -28,12 +31,8 @@ import lombok.ToString;
 @EqualsAndHashCode
 @SuppressWarnings("unused")
 public class ElasticSearchEnvVarLoggingConfiguration
+    extends AbstractLoggingConfiguration
     implements ElasticSearchLoggingConfiguration {
-
-    /**
-     * The registry key.
-     */
-    private String registryKey;
 
     /**
      * The ElasticSearch host property: "elasticsearch.host".
@@ -83,7 +82,9 @@ public class ElasticSearchEnvVarLoggingConfiguration
     /**
      * Creates an empty instance.
      */
-    public ElasticSearchEnvVarLoggingConfiguration() {}
+    public ElasticSearchEnvVarLoggingConfiguration() {
+        super("ElasticSearch");
+    }
 
     /**
      * Retrieves the ElasticSearch host.
@@ -109,6 +110,7 @@ public class ElasticSearchEnvVarLoggingConfiguration
      * Retrieves the ElasticSearch host.
      * @return such host.
      */
+    @NonNull
     public String getScheme() {
         return
             EnvironmentHelper.getInstance().retrieveStringFromSystemPropertyOrEnvironmentVariableOrElse(
@@ -123,11 +125,12 @@ public class ElasticSearchEnvVarLoggingConfiguration
      */
     @SuppressWarnings("unused")
     @LoggingConfigurationProducer(key = "ElasticSearch")
+    @Nullable
     public LoggingConfiguration createLoggingConfiguration() {
-        final LoggingConfiguration result;
+        @Nullable final LoggingConfiguration result;
 
-        final String key = "ElasticSearch"; // Needs to match the @LoggingConfigurationProducer's key.
-        final String host = getHost();
+        @NonNull final String key = "ElasticSearch"; // Needs to match the @LoggingConfigurationProducer's key.
+        @Nullable final String host = getHost();
 
         if (host != null) {
             result = produceConfiguration(key, host, getPort(), getScheme());
@@ -147,31 +150,7 @@ public class ElasticSearchEnvVarLoggingConfiguration
      * @return the {@link LoggingConfiguration}.
      */
     protected LoggingConfiguration produceConfiguration(
-        final String key, final String host, final int port, final String scheme) {
+        @NonNull final String key, @NonNull final String host, final int port, @NonNull final String scheme) {
         return new ElasticSearchLoggingConfigurationData(key, host, port, scheme);
-    }
-
-    /**
-     * Specifies the registry key.
-     * @param key such key.
-     */
-    protected final void immutableSetRegistryKey(final String key) {
-        this.registryKey = key;
-    }
-
-    /**
-     * Specifies the registry key. Override me if necessary.
-     * @param key such key.
-     */
-    protected void setRegistryKey(final String key) {
-        immutableSetRegistryKey(key);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getRegistryKey() {
-        return registryKey;
     }
 }

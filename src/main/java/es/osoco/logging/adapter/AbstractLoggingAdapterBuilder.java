@@ -16,6 +16,9 @@ package es.osoco.logging.adapter;
 
 import es.osoco.logging.Logging;
 import es.osoco.logging.config.LoggingConfiguration;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -43,16 +46,16 @@ public abstract class AbstractLoggingAdapterBuilder<C extends LoggingConfigurati
      * @param regKey the registry key.
      * @param config the {@link LoggingConfiguration}.
      */
-    protected AbstractLoggingAdapterBuilder(final String regKey, final C config) {
-        immutableSetRegistryKey(regKey);
-        immutableSetLoggingConfiguration(config);
+    protected AbstractLoggingAdapterBuilder(@NonNull final String regKey, @NonNull final C config) {
+        this.registryKey = regKey;
+        this.loggingConfiguration = config;
     }
 
     /**
      * Specifies the registry key.
      * @param key the key.
      */
-    protected final void immutableSetRegistryKey(final String key) {
+    protected final void immutableSetRegistryKey(@NonNull final String key) {
         this.registryKey = key;
     }
 
@@ -61,7 +64,7 @@ public abstract class AbstractLoggingAdapterBuilder<C extends LoggingConfigurati
      * @param key the key.
      */
     @SuppressWarnings("unused")
-    protected void setRegistryKey(final String key) {
+    protected void setRegistryKey(@NonNull final String key) {
         immutableSetRegistryKey(key);
     }
 
@@ -69,6 +72,7 @@ public abstract class AbstractLoggingAdapterBuilder<C extends LoggingConfigurati
      * Retrieves the registry key.
      * @return such key.
      */
+    @NonNull
     protected final String immutableGetRegistryKey() {
         return registryKey;
     }
@@ -78,6 +82,7 @@ public abstract class AbstractLoggingAdapterBuilder<C extends LoggingConfigurati
      * @return such key.
      */
     @Override
+    @NonNull
     public String getRegistryKey() {
         return immutableGetRegistryKey();
     }
@@ -86,7 +91,7 @@ public abstract class AbstractLoggingAdapterBuilder<C extends LoggingConfigurati
      * Specifies the {@link LoggingConfiguration} to use.
      * @param config such instance.
      */
-    protected final void immutableSetLoggingConfiguration(final C config) {
+    protected final void immutableSetLoggingConfiguration(@NonNull final C config) {
         this.loggingConfiguration = config;
     }
 
@@ -95,7 +100,7 @@ public abstract class AbstractLoggingAdapterBuilder<C extends LoggingConfigurati
      * @param config such instance.
      */
     @SuppressWarnings("unused")
-    protected void setLoggingConfiguration(final C config) {
+    protected void setLoggingConfiguration(@NonNull final C config) {
         immutableSetLoggingConfiguration(config);
     }
 
@@ -103,6 +108,7 @@ public abstract class AbstractLoggingAdapterBuilder<C extends LoggingConfigurati
      * Retrieves the {@link LoggingConfiguration} to use.
      * @return such instance.
      */
+    @NonNull
     protected final C immutableGetLoggingConfiguration() {
         return this.loggingConfiguration;
     }
@@ -121,6 +127,7 @@ public abstract class AbstractLoggingAdapterBuilder<C extends LoggingConfigurati
      * @return such adapter.
      */
     @Override
+    @Nullable
     public L build() {
         return this.build(getLoggingConfiguration());
     }
@@ -130,5 +137,6 @@ public abstract class AbstractLoggingAdapterBuilder<C extends LoggingConfigurati
      * @param config the {@link LoggingConfiguration} to use.
      * @return such adapter.
      */
+    @Nullable
     protected abstract L build(final C config);
 }

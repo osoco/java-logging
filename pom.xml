@@ -19,7 +19,7 @@
 
   <groupId>es.osoco.logging</groupId>
   <artifactId>java-logging</artifactId>
-  <version>0.3</version>
+  <version>0.4</version>
   <packaging>jar</packaging>
   <name>Java Logging</name>
   <description>Logging for Java projects</description>
@@ -86,16 +86,46 @@
       <version>2.20.2</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.11.0</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-core</artifactId>
       <version>1.1.0</version>
       <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-events</artifactId>
       <version>1.1.0</version>
       <scope>compile</scope>
+      <optional>true</optional>
+      <exclusions>
+        <exclusion>
+          <groupId>com.amazonaws</groupId>
+          <artifactId>aws-java-sdk-s3</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.amazonaws</groupId>
+          <artifactId>aws-java-sdk-sns</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.amazonaws</groupId>
+          <artifactId>aws-java-sdk-cognitoidentity</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.amazonaws</groupId>
+          <artifactId>aws-java-sdk-kinesis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.amazonaws</groupId>
+          <artifactId>aws-java-sdk-dynamodb</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -110,28 +140,37 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>me.nallar.whocalled</groupId>
+      <artifactId>WhoCalled</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
       <groupId>org.elasticsearch.client</groupId>
       <artifactId>rest</artifactId>
       <version>5.1.2</version>
       <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
       <version>4.4.5</version>
       <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore-nio</artifactId>
       <version>4.4.5</version>
       <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpasyncclient</artifactId>
       <version>4.1.2</version>
       <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>commons-validator</groupId>
@@ -395,20 +434,20 @@
   </build>
 
   <repositories>
-    <repository>
+    <!--repository>
       <id>osoco-snapshots</id>
       <name>OSOCO Snapshots</name>
       <url>https://nexus.osoco.es/repository/maven-snapshots</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository>
+    </repository-->
     <repository>
       <id>osoco-releases</id>
       <name>OSOCO Releases</name>
       <url>https://nexus.osoco.es/repository/maven-releases</url>
       <snapshots>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
 

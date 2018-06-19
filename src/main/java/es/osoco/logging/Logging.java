@@ -14,6 +14,8 @@
 */
 package es.osoco.logging;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * Provides logging.
  */
@@ -23,13 +25,14 @@ public interface Logging {
      * Logs an "error" message.
      * @param msg the message.
      */
-    void error(String msg);
+    void error(@NonNull String msg);
 
     /**
-     * Checks whether "error" logging is enabled.
-     * @return such information.
+     * Logs an "error" message in given category.
+     * @param category the category.
+     * @param msg the message.
      */
-    boolean isErrorEnabled();
+    void error(@NonNull String category, @NonNull String msg);
 
     /**
      * Enables or disables the "error" level.
@@ -38,10 +41,37 @@ public interface Logging {
     void setErrorEnabled(boolean flag);
 
     /**
+     * Enables or disables the "error" level for given category.
+     * @param category the category.
+     * @param flag the flag.
+     */
+    void setErrorEnabled(@NonNull final String category, boolean flag);
+
+    /**
+     * Checks whether "error" logging is enabled.
+     * @return such information.
+     */
+    boolean isErrorEnabled();
+
+    /**
+     * Checks whether "error" logging is enabled for given category.
+     * @param category the category.
+     * @return such information.
+     */
+    boolean isErrorEnabled(@NonNull String category);
+
+    /**
      * Logs a "warn" message.
      * @param msg the message.
      */
-    void warn(String msg);
+    void warn(@NonNull String msg);
+
+    /**
+     * Logs a "warn" message in given category.
+     * @param category the category.
+     * @param msg the message.
+     */
+    void warn(@NonNull String category, @NonNull String msg);
 
     /**
      * Enables or disables the "warn" level.
@@ -50,22 +80,37 @@ public interface Logging {
     void setWarnEnabled(boolean flag);
 
     /**
+     * Enables or disables the "warn" level for given category.
+     * @param category the category.
+     * @param flag the flag.
+     */
+    void setWarnEnabled(@NonNull String category, boolean flag);
+
+    /**
      * Checks whether "warn" logging is enabled.
      * @return such information.
      */
     boolean isWarnEnabled();
 
     /**
+     * Checks whether "warn" logging is enabled for given category.
+     * @param category the category.
+     * @return such information.
+     */
+    boolean isWarnEnabled(@NonNull String category);
+
+    /**
      * Logs an "info" message.
      * @param msg the message.
      */
-    void info(String msg);
+    void info(@NonNull String msg);
 
     /**
-     * Checks whether "info" logging is enabled.
-     * @return such information.
+     * Logs an "info" message in given category.
+     * @param category the category.
+     * @param msg the message.
      */
-    boolean isInfoEnabled();
+    void info(@NonNull String category, @NonNull String msg);
 
     /**
      * Enables or disables the "info" level.
@@ -74,16 +119,37 @@ public interface Logging {
     void setInfoEnabled(boolean flag);
 
     /**
+     * Enables or disables the "info" level for given category.
+     * @param category the category.
+     * @param flag the flag.
+     */
+    void setInfoEnabled(@NonNull String category, boolean flag);
+
+    /**
+     * Checks whether "info" logging is enabled.
+     * @return such information.
+     */
+    boolean isInfoEnabled();
+
+    /**
+     * Checks whether "info" logging is enabled for given category.
+     * @param category the category.
+     * @return such information.
+     */
+    boolean isInfoEnabled(@NonNull String category);
+
+    /**
      * Logs a "debug" message.
      * @param msg the message.
      */
-    void debug(String msg);
+    void debug(@NonNull String msg);
 
     /**
-     * Checks whether "debug" logging is enabled.
-     * @return such information.
+     * Logs a "debug" message in given category.
+     * @param category the category.
+     * @param msg the message.
      */
-    boolean isDebugEnabled();
+    void debug(@NonNull String category, @NonNull String msg);
 
     /**
      * Enables or disables the "debug" level.
@@ -92,16 +158,37 @@ public interface Logging {
     void setDebugEnabled(boolean flag);
 
     /**
+     * Enables or disables the "debug" level, for given category.
+     * @param category the category.
+     * @param flag the flag.
+     */
+    void setDebugEnabled(@NonNull String category, boolean flag);
+
+    /**
+     * Checks whether "debug" logging is enabled.
+     * @return such information.
+     */
+    boolean isDebugEnabled();
+
+    /**
+     * Checks whether "debug" logging is enabled for given category.
+     * @param category the category.
+     * @return such information.
+     */
+    boolean isDebugEnabled(@NonNull String category);
+
+    /**
      * Logs a "trace" message.
      * @param msg the message.
      */
-    void trace(String msg);
+    void trace(@NonNull String msg);
 
     /**
-     * Checks whether "trace" logging is enabled.
-     * @return such information.
+     * Logs a "trace" message in given category.
+     * @param category the category.
+     * @param msg the message.
      */
-    boolean isTraceEnabled();
+    void trace(@NonNull String category, @NonNull String msg);
 
     /**
      * Enables or disables the "trace" level.
@@ -110,8 +197,29 @@ public interface Logging {
     void setTraceEnabled(boolean flag);
 
     /**
+     * Enables or disables the "trace" level for given category.
+     * @param category the category.
+     * @param flag the flag.
+     */
+    void setTraceEnabled(@NonNull String category, boolean flag);
+
+    /**
+     * Checks whether "trace" logging is enabled.
+     * @return such information.
+     */
+    boolean isTraceEnabled();
+
+    /**
+     * Checks whether "trace" logging is enabled for given category.
+     * @param category the category.
+     * @return such information.
+     */
+    boolean isTraceEnabled(@NonNull String category);
+
+    /**
      * Retrieves the {@link LoggingContext}.
      * @return such context.
      */
+    @NonNull
     LoggingContext getLoggingContext();
 }

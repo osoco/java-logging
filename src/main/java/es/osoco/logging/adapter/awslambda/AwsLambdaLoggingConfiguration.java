@@ -16,6 +16,8 @@ package es.osoco.logging.adapter.awslambda;
 
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import es.osoco.logging.config.LoggingConfiguration;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -36,15 +38,15 @@ public class AwsLambdaLoggingConfiguration
      * Creates a new AWS-Lambda logger configuration.
      * @param logger the {@link LambdaLogger}.
      */
-    public AwsLambdaLoggingConfiguration(final LambdaLogger logger) {
-        immutableSetLambdaLogger(logger);
+    public AwsLambdaLoggingConfiguration(@NonNull final LambdaLogger logger) {
+        this.logger = logger;
     }
 
     /**
      * Specifies the {@link LambdaLogger}.
      * @param logger the {@link LambdaLogger} instance.
      */
-    protected final void immutableSetLambdaLogger(final LambdaLogger logger) {
+    protected final void immutableSetLambdaLogger(@NonNull final LambdaLogger logger) {
         this.logger = logger;
     }
 
@@ -53,7 +55,7 @@ public class AwsLambdaLoggingConfiguration
      * @param logger the logger.
      */
     @SuppressWarnings("unused")
-    protected void setLambdaLogger(final LambdaLogger logger) {
+    protected void setLambdaLogger(@NonNull final LambdaLogger logger) {
         immutableSetLambdaLogger(logger);
     }
 
@@ -61,6 +63,7 @@ public class AwsLambdaLoggingConfiguration
      * Retrieves the underlying {@link LambdaLogger}.
      * @return the logger.
      */
+    @NonNull
     protected final LambdaLogger immutableGetLambdaLogger() {
         return this.logger;
     }
@@ -70,6 +73,7 @@ public class AwsLambdaLoggingConfiguration
      * @return the logger.
      */
     @SuppressWarnings("unused")
+    @NonNull
     public LambdaLogger getLambdaLogger() {
         return immutableGetLambdaLogger();
     }
@@ -78,6 +82,7 @@ public class AwsLambdaLoggingConfiguration
      * {@inheritDoc}
      */
     @Override
+    @NonNull
     public String getRegistryKey() {
         return "aws-lambda";
     }

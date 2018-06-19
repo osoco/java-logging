@@ -14,6 +14,9 @@
 */
 package es.osoco.logging;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Used to add additional information to the underlying logging mechanism.
  */
@@ -25,7 +28,8 @@ public interface LoggingContext {
      * @param <T> the value type.
      * @return the value.
      */
-    <T> T get(final String key);
+    @Nullable
+    <T> T get(@NonNull final String key);
 
     /**
      * Stores a value under given key, locally to the current thread.
@@ -33,5 +37,5 @@ public interface LoggingContext {
      * @param value the value (if {@code null}, it's not stored).
      * @param <T> the value type.
      */
-    <T> void put(final String key, final T value);
+    <T> void put(@NonNull final String key, @Nullable final T value);
 }

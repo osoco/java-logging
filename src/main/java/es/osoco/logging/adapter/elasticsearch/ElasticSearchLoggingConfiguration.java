@@ -14,7 +14,9 @@
 */
 package es.osoco.logging.adapter.elasticsearch;
 
+import es.osoco.logging.adapter.AbstractLoggingConfiguration;
 import es.osoco.logging.config.LoggingConfiguration;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -43,14 +45,10 @@ public interface ElasticSearchLoggingConfiguration
     String getScheme();
 
     @ToString
-    @EqualsAndHashCode
+    @EqualsAndHashCode(callSuper = true)
     class ElasticSearchLoggingConfigurationData
+        extends AbstractLoggingConfiguration
         implements ElasticSearchLoggingConfiguration {
-        /**
-         * The registry key.
-         */
-        private String registryKey;
-
         /**
          * The host.
          */
@@ -74,40 +72,18 @@ public interface ElasticSearchLoggingConfiguration
          * @param scheme the scheme.
          */
         public ElasticSearchLoggingConfigurationData(
-            final String key, final String host, final int port, final String scheme) {
-            immutableSetRegistryKey(key);
-            immutableSetHost(host);
-            immutableSetPort(port);
-            immutableSetScheme(scheme);
-        }
-
-        /**
-         * Specifies the registry key.
-         * @param key such key.
-         */
-        protected final void immutableSetRegistryKey(final String key) {
-            this.registryKey = key;
-        }
-
-        /**
-         * Specifies the registry key. Override me if necessary.
-         * @param key such key.
-         */
-        @SuppressWarnings("unused")
-        protected void setRegistryKey(final String key) {
-            immutableSetRegistryKey(key);
-        }
-
-        @Override
-        public String getRegistryKey() {
-            return registryKey;
+            @NonNull final String key, @NonNull final String host, final int port, @NonNull final String scheme) {
+            super(key);
+            this.host = host;
+            this.port = port;
+            this.scheme = scheme;
         }
 
         /**
          * Specifies the host.
          * @param host such host.
          */
-        protected final void immutableSetHost(final String host) {
+        protected final void immutableSetHost(@NonNull final String host) {
             this.host = host;
         }
 
@@ -116,11 +92,12 @@ public interface ElasticSearchLoggingConfiguration
          * @param host such host.
          */
         @SuppressWarnings("unused")
-        protected void setHost(final String host) {
+        protected void setHost(@NonNull final String host) {
             immutableSetHost(host);
         }
 
         @Override
+        @NonNull
         public String getHost() {
             return host;
         }
@@ -151,7 +128,7 @@ public interface ElasticSearchLoggingConfiguration
          * Specifies the scheme.
          * @param scheme such scheme.
          */
-        protected final void immutableSetScheme(final String scheme) {
+        protected final void immutableSetScheme(@NonNull final String scheme) {
             this.scheme = scheme;
         }
 
@@ -160,11 +137,12 @@ public interface ElasticSearchLoggingConfiguration
          * @param scheme such scheme.
          */
         @SuppressWarnings("unused")
-        protected void setScheme(final String scheme) {
+        protected void setScheme(@NonNull final String scheme) {
             immutableSetScheme(scheme);
         }
 
         @Override
+        @NonNull
         public String getScheme() {
             return scheme;
         }

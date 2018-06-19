@@ -19,6 +19,8 @@ import es.osoco.logging.helper.EnvironmentHelper;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.ImplementingClassMatchProcessor;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.MethodAnnotationMatchProcessor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
@@ -45,51 +47,60 @@ public class LoggingConfigurationRegistry {
     /**
      * The property to enable or disable automatically discovering of logging configurations.
      */
+    @NonNull
     public static final String AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS_PROPERTY =
         "automatically.discover.logging.configurations";
 
     /**
      * The environment variable to enable or disable automatically discovering of logging configurations.
      */
+    @NonNull
     public static final String AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS_ENVVAR =
         "AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS";
 
     /**
      * The default behavior for automatically discovering of logging configurations.
      */
+    @NonNull
     public static final boolean DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS = true;
 
     /**
      * The property to enable or disable automatically discovering of logging configuration producers.
      */
+    @NonNull
     public static final String AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS_PROPERTY =
         "automatically.discover.logging.configuration.producers";
 
     /**
      * The environment variable to enable or disable automatically discovering of logging configuration producers.
      */
+    @NonNull
     public static final String AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS_ENVVAR =
         "AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS";
 
     /**
      * The default behavior for automatically discovering of logging configuration producers.
      */
+    @NonNull
     public static final boolean DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS = true;
 
     /**
      * The underlying logging configuration map.
      */
+    @NonNull
     private Map<String, ? extends LoggingConfiguration> map = new HashMap<>();
 
     /**
      * The listeners.
      */
+    @NonNull
     private List<LoggingConfigurationListener> listeners = new ArrayList<>();
 
     /**
      * Singleton implementation to avoid double-check locking.
      */
     protected static final class LoggingConfigurationRegistrySingletonContainer {
+        @NonNull
         public static final LoggingConfigurationRegistry SINGLETON = new LoggingConfigurationRegistry();
     }
 
@@ -171,7 +182,7 @@ public class LoggingConfigurationRegistry {
      * Adds a new listener.
      * @param listener the {@link LoggingConfigurationListener} listener.
      */
-    public void addListener(final LoggingConfigurationListener listener) {
+    public void addListener(@NonNull final LoggingConfigurationListener listener) {
         getListeners().add(listener);
     }
 
@@ -182,10 +193,9 @@ public class LoggingConfigurationRegistry {
      * @return the associated configuration.
      */
     @SuppressWarnings("unchecked")
-    public <T extends LoggingConfiguration> T get(final String key) {
-        final T result = (T) immutableGetMap().get(key);
-
-        return result;
+    @Nullable
+    public <T extends LoggingConfiguration> T get(@NonNull final String key) {
+        return (T) immutableGetMap().get(key);
     }
 
     /**
@@ -194,7 +204,7 @@ public class LoggingConfigurationRegistry {
      * @param <T> the type of the value.
      */
     @SuppressWarnings("unchecked")
-    public <T extends LoggingConfiguration> void put(final T config) {
+    public <T extends LoggingConfiguration> void put(@NonNull final T config) {
         put(config.getRegistryKey(), config);
     }
 
@@ -205,7 +215,7 @@ public class LoggingConfigurationRegistry {
      * @param <T> the type of the value.
      */
     @SuppressWarnings("unchecked")
-    public <T extends LoggingConfiguration> void put(final String key, final T config) {
+    public <T extends LoggingConfiguration> void put(@NonNull final String key, @NonNull final T config) {
         getMap().put(key, config);
         notifyListeners(config);
     }
@@ -215,7 +225,7 @@ public class LoggingConfigurationRegistry {
      * @param config the new {@link LoggingConfiguration}.
      * @param <T> the LoggingConfiguration implementation.
      */
-    protected <T extends LoggingConfiguration> void notifyListeners(final T config) {
+    protected <T extends LoggingConfiguration> void notifyListeners(@NonNull final T config) {
         notifyListeners(config, getListeners());
     }
 
@@ -226,7 +236,7 @@ public class LoggingConfigurationRegistry {
      * @param <T> the LoggingConfiguration implementation.
      */
     protected <T extends LoggingConfiguration> void notifyListeners(
-        final T config, final List<LoggingConfigurationListener> listeners) {
+        @NonNull final T config, @NonNull final List<LoggingConfigurationListener> listeners) {
         listeners.forEach( l -> l.newLoggingConfigurationAvailable(config));
     }
 
@@ -259,16 +269,16 @@ public class LoggingConfigurationRegistry {
          * Scans the classpath for {@link LoggingConfigurationListener} implementations.
          * @param registry the registry where the listeners will be annotated.
          */
-        public void discover(final LoggingConfigurationRegistry registry) {
-            final ImplementingClassMatchProcessor<LoggingConfigurationListener> processor = implementingClass -> {
+        public void discover(@NonNull final LoggingConfigurationRegistry registry) {
+            @NonNull final ImplementingClassMatchProcessor<LoggingConfigurationListener> processor = implementingClass -> {
                 try {
-                    final LoggingConfigurationListener listener = implementingClass.newInstance();
+                    @NonNull final LoggingConfigurationListener listener = implementingClass.newInstance();
                     registry.addListener(listener);
                 } catch (final InstantiationException | IllegalAccessException error) {
                     // TODO: Deal with me
                 }
             };
-            final FastClasspathScanner scanner = new FastClasspathScanner();
+            @NonNull final FastClasspathScanner scanner = new FastClasspathScanner();
             scanner.matchClassesImplementing(LoggingConfigurationListener.class, processor);
             scanner.scan();
         }
@@ -278,10 +288,11 @@ public class LoggingConfigurationRegistry {
      * Scans the classpath for {@link LoggingConfigurationListener}s.
      */
     protected final void discoverLoggingConfigurationProducers() {
+
         if (discoverLoggingConfigurationProducersEnabled()) {
-            final LoggingConfigurationProducerAnnotationMatchProcessor processor =
+            @NonNull final LoggingConfigurationProducerAnnotationMatchProcessor processor =
                 new LoggingConfigurationProducerAnnotationMatchProcessor(this);
-            final FastClasspathScanner scanner = new FastClasspathScanner();
+            @NonNull final FastClasspathScanner scanner = new FastClasspathScanner();
             scanner.matchClassesWithMethodAnnotation(LoggingConfigurationProducer.class, processor);
             scanner.scan();
         }
@@ -309,21 +320,23 @@ public class LoggingConfigurationRegistry {
         /**
          * The registry.
          */
+        @NonNull
         private LoggingConfigurationRegistry registry;
 
         /**
          * Creates a net instance to use given registry.
          * @param registry the {@link LoggingConfigurationRegistry}.
          */
-        public LoggingConfigurationProducerAnnotationMatchProcessor(final LoggingConfigurationRegistry registry) {
-            immutableSetRegistry(registry);
+        public LoggingConfigurationProducerAnnotationMatchProcessor(
+            @NonNull final LoggingConfigurationRegistry registry) {
+            this.registry = registry;
         }
 
         /**
          * Specifies the registry to use.
          * @param registry such {@link LoggingConfigurationRegistry}.
          */
-        protected final void immutableSetRegistry(final LoggingConfigurationRegistry registry) {
+        protected final void immutableSetRegistry(@NonNull final LoggingConfigurationRegistry registry) {
             this.registry = registry;
         }
 
@@ -331,7 +344,7 @@ public class LoggingConfigurationRegistry {
          * Specifies the registry to use. Override me if necessary.
          * @param registry such {@link LoggingConfigurationRegistry}.
          */
-        @SuppressWarnings("unused") protected void setRegistry(final LoggingConfigurationRegistry registry) {
+        @SuppressWarnings("unused") protected void setRegistry(@NonNull final LoggingConfigurationRegistry registry) {
             immutableSetRegistry(registry);
         }
 
@@ -339,12 +352,13 @@ public class LoggingConfigurationRegistry {
          * Retrieves the registry.
          * @return such registry.
          */
+        @NonNull
         public LoggingConfigurationRegistry getRegistry() {
             return registry;
         }
 
         @Override
-        public void processMatch(final Class<?> classWithAnnotation, final Executable matchingMethod) {
+        public void processMatch(@NonNull final Class<?> classWithAnnotation, @NonNull final Executable matchingMethod) {
             processMatch(classWithAnnotation, matchingMethod, getRegistry());
         }
 
@@ -355,15 +369,15 @@ public class LoggingConfigurationRegistry {
          * @param registry the registry.
          */
         protected void processMatch(
-            final Class<?> classWithAnnotation,
-            final Executable matchingMethod,
-            final LoggingConfigurationRegistry registry) {
+            @NonNull final Class<?> classWithAnnotation,
+            @NonNull final Executable matchingMethod,
+            @NonNull final LoggingConfigurationRegistry registry) {
             try {
-                final Object producer = classWithAnnotation.newInstance();
+                @NonNull final Object producer = classWithAnnotation.newInstance();
                 if (matchingMethod instanceof Method) {
-                    Object config = ((Method) matchingMethod).invoke(producer);
+                    @Nullable final Object config = ((Method) matchingMethod).invoke(producer);
                     if (config instanceof LoggingConfiguration) {
-                        final LoggingConfiguration loggingConfiguration = (LoggingConfiguration) config;
+                        @NonNull final LoggingConfiguration loggingConfiguration = (LoggingConfiguration) config;
                         registry.put(loggingConfiguration.getRegistryKey(), loggingConfiguration);
                     } else {
                         // Invalid method signature.
@@ -371,7 +385,7 @@ public class LoggingConfigurationRegistry {
                 } else {
                     // Annotation on a constructor.
                 }
-            } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            } catch (@NonNull final IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }

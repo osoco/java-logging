@@ -15,6 +15,8 @@
 package es.osoco.logging.impl;
 
 import es.osoco.logging.LoggingContext;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +35,7 @@ public class ThreadLocalLoggingContext
     /**
      * The underlying map.
      */
+    @NonNull
     private final ThreadLocal<Map<String, ?>> map = ThreadLocal.withInitial(HashMap::new);
 
     /**
@@ -45,6 +48,7 @@ public class ThreadLocalLoggingContext
      * Retrieves the map.
      * @return such collection.
      */
+    @NonNull
     protected final Map<String, ?> immutableGetMap() {
         return this.map.get();
     }
@@ -56,7 +60,8 @@ public class ThreadLocalLoggingContext
      * @return the value.
      */
     @SuppressWarnings("unchecked")
-    public <T> T get(final String key) {
+    @Nullable
+    public <T> T get(@NonNull final String key) {
         return (T) immutableGetMap().get(key);
     }
 
@@ -67,9 +72,16 @@ public class ThreadLocalLoggingContext
      * @param <T> the value type.
      */
     @SuppressWarnings("unchecked")
-    public <T> void put(final String key, final T value) {
-        if ((key != null) && (value != null)) {
-            ((Map<String, T>) immutableGetMap()).put(key, value);
+    public <T> void put(@NonNull final String key, @Nullable final T value) {
+        if (key != null) {
+            @NonNull
+            final Map<String, T> map = (Map<String, T>) immutableGetMap();
+
+            if (value == null) {
+                map.remove(key);
+            } else {
+                map.put(key, value);
+            }
         }
     }
 }

@@ -14,7 +14,8 @@
 */
 package es.osoco.logging.adapter.printstream;
 
-import es.osoco.logging.config.LoggingConfiguration;
+import es.osoco.logging.adapter.AbstractLoggingConfiguration;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.PrintStream;
 
@@ -25,14 +26,9 @@ import lombok.ToString;
  * Logging configuration based on {@link PrintStream}s.
  */
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 public class PrintStreamLoggingConfiguration
-    implements LoggingConfiguration {
-
-    /**
-     * The configuration key.
-     */
-    private String key;
+    extends AbstractLoggingConfiguration {
 
     /**
      * The print stream to use.
@@ -44,41 +40,16 @@ public class PrintStreamLoggingConfiguration
      * @param key the key.
      * @param stream such stream.
      */
-    public PrintStreamLoggingConfiguration(final String key, final PrintStream stream) {
-        immutableSetRegistryKey(key);
-        immutableSetStream(stream);
-    }
-
-    /**
-     * Specifies the registry key.
-     * @param key such key.
-     */
-    protected final void immutableSetRegistryKey(final String key) {
-        this.key = key;
-    }
-
-    /**
-     * Specifies the registry key. Override me if necessary.
-     * @param key such key.
-     */
-    @SuppressWarnings("unused")
-    protected void setRegistryKey(final String key) {
-        immutableSetRegistryKey(key);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getRegistryKey() {
-        return this.key;
+    public PrintStreamLoggingConfiguration(@NonNull final String key, @NonNull final PrintStream stream) {
+        super(key);
+        this.stream = stream;
     }
 
     /**
      * Sets the stream to use.
      * @param stream the stream.
      */
-    protected final void immutableSetStream(final PrintStream stream) {
+    protected final void immutableSetStream(@NonNull final PrintStream stream) {
         this.stream = stream;
     }
 
@@ -87,7 +58,7 @@ public class PrintStreamLoggingConfiguration
      * @param stream the stream.
      */
     @SuppressWarnings("unused")
-    protected void setStream(final PrintStream stream) {
+    protected void setStream(@NonNull final PrintStream stream) {
         immutableSetStream(stream);
     }
 
@@ -95,6 +66,7 @@ public class PrintStreamLoggingConfiguration
      * Retrieves the {@link PrintStream}.
      * @return such instance.
      */
+    @NonNull
     protected final PrintStream immutableGetPrintStream() {
         return this.stream;
     }
@@ -103,6 +75,7 @@ public class PrintStreamLoggingConfiguration
      * Retrieves the {@link PrintStream}. Override me if necessary.
      * @return such instance.
      */
+    @NonNull
     public PrintStream getPrintStream() {
         return immutableGetPrintStream();
     }

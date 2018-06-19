@@ -16,6 +16,8 @@ package es.osoco.logging.adapter.printstream;
 
 import es.osoco.logging.adapter.AbstractLoggingAdapter;
 import es.osoco.logging.adapter.LoggingAdapter;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.PrintStream;
 
@@ -34,7 +36,7 @@ public class PrintStreamLoggingAdapter
      * Creates a logging configuration for given {@link PrintStreamLoggingConfiguration}.
      * @param config such configuration.
      */
-    public PrintStreamLoggingAdapter(final PrintStreamLoggingConfiguration config) {
+    public PrintStreamLoggingAdapter(@NonNull final PrintStreamLoggingConfiguration config) {
         super(config);
     }
 
@@ -42,32 +44,32 @@ public class PrintStreamLoggingAdapter
      * Logs to the underlying {@link PrintStream}.
      * @param msg the message to log.
      */
-    protected void logToPrintStream(final String msg) {
-        getLoggingConfiguration().getPrintStream().println(msg);
+    protected void logToPrintStream(@Nullable final String category, @NonNull final String msg) {
+        getLoggingConfiguration().getPrintStream().println(buildCategoryPrefix(category) + msg);
     }
 
     @Override
-    protected void logError(final String msg) {
-        logToPrintStream(msg);
+    protected void logError(@Nullable final String category, @NonNull final String msg) {
+        logToPrintStream(category, msg);
     }
 
     @Override
-    protected void logWarn(final String msg) {
-        logToPrintStream(msg);
+    protected void logWarn(@Nullable final String category, @NonNull final String msg) {
+        logToPrintStream(category, msg);
     }
 
     @Override
-    protected void logInfo(final String msg) {
-        logToPrintStream(msg);
+    protected void logInfo(@Nullable final String category, @NonNull final String msg) {
+        logToPrintStream(category, msg);
     }
 
     @Override
-    protected void logDebug(final String msg) {
-        logToPrintStream(msg);
+    protected void logDebug(@Nullable final String category, @NonNull final String msg) {
+        logToPrintStream(category, msg);
     }
 
     @Override
-    protected void logTrace(final String msg) {
-        logToPrintStream(msg);
+    protected void logTrace(@Nullable final String category, @NonNull final String msg) {
+        logToPrintStream(category, msg);
     }
 }

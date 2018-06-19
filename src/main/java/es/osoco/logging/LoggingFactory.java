@@ -20,6 +20,7 @@ import es.osoco.logging.adapter.LoggingAdapterBuilderRegistry;
 import es.osoco.logging.config.LoggingConfigurationRegistry;
 import es.osoco.logging.impl.CompositeLogging;
 import es.osoco.logging.preferences.LoggingPrefs;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,9 +70,10 @@ public class LoggingFactory {
      * @param registry the {@link LoggingAdapterBuilderRegistry} instance.
      * @return such instance.
      */
-    protected Logging createLogging(final LoggingPrefs prefs, final LoggingAdapterBuilderRegistry registry) {
-        final String[] preferred = prefs.myPreferredLogging();
-        final String[] fallback = prefs.myFallbackLogging();
+    protected Logging createLogging(
+        @NonNull final LoggingPrefs prefs, @NonNull final LoggingAdapterBuilderRegistry registry) {
+        @NonNull final String[] preferred = prefs.myPreferredLogging();
+        @NonNull final String[] fallback = prefs.myFallbackLogging();
         final List<LoggingAdapterBuilder<?, ?>> preferredBuilders = toBuilders(preferred, registry);
         final List<LoggingAdapterBuilder<?, ?>> fallbackBuilders = toBuilders(fallback, registry);
 

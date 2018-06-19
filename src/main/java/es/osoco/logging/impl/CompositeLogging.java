@@ -17,6 +17,7 @@ package es.osoco.logging.impl;
 import es.osoco.logging.Logging;
 import es.osoco.logging.LoggingContext;
 import es.osoco.logging.adapter.LoggingAdapter;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 
@@ -26,8 +27,13 @@ import java.util.List;
 public class CompositeLogging
     implements Logging {
 
+    @NonNull
     private LoggingContext context = new ThreadLocalLoggingContext();
+
+    @NonNull
     private List<LoggingAdapter> preferred;
+
+    @NonNull
     private List<LoggingAdapter> fallback;
 
     /**
@@ -35,16 +41,16 @@ public class CompositeLogging
      * @param preferred the preferred adapters.
      * @param fallback the fallback adapter
      */
-    public CompositeLogging(final List<LoggingAdapter> preferred, final List<LoggingAdapter> fallback) {
-        immutableSetPreferred(preferred);
-        immutableSetFallback(fallback);
+    public CompositeLogging(@NonNull final List<LoggingAdapter> preferred, @NonNull final List<LoggingAdapter> fallback) {
+        this.preferred = preferred;
+        this.fallback = fallback;
     }
 
     /**
      * Specifies the preferred adapters.
      * @param preferred the preferred logging.
      */
-    protected final void immutableSetPreferred(final List<LoggingAdapter> preferred) {
+    protected final void immutableSetPreferred(@NonNull final List<LoggingAdapter> preferred) {
         this.preferred = preferred;
     }
 
@@ -53,7 +59,7 @@ public class CompositeLogging
      * @param preferred the preferred logging.
      */
     @SuppressWarnings("unused")
-    protected void setPreferred(final List<LoggingAdapter> preferred) {
+    protected void setPreferred(@NonNull final List<LoggingAdapter> preferred) {
         immutableSetPreferred(preferred);
     }
 
@@ -61,6 +67,7 @@ public class CompositeLogging
      * Retrieves the preferred logging adapters.
      * @return such adapters.
      */
+    @NonNull
     public List<LoggingAdapter> getPreferred() {
         return this.preferred;
     }
@@ -69,7 +76,7 @@ public class CompositeLogging
      * Specifies the fallback adapters.
      * @param fallback the fallback logging.
      */
-    protected final void immutableSetFallback(final List<LoggingAdapter> fallback) {
+    protected final void immutableSetFallback(@NonNull final List<LoggingAdapter> fallback) {
         this.fallback = fallback;
     }
 
@@ -78,7 +85,7 @@ public class CompositeLogging
      * @param fallback the fallback logging.
      */
     @SuppressWarnings("unused")
-    protected void setFallback(final List<LoggingAdapter> fallback) {
+    protected void setFallback(@NonNull final List<LoggingAdapter> fallback) {
         immutableSetFallback(fallback);
     }
 
@@ -86,6 +93,7 @@ public class CompositeLogging
      * Retrieves the fallback logging adapters.
      * @return such adapters.
      */
+    @NonNull
     public List<LoggingAdapter> getFallback() {
         return this.fallback;
     }
@@ -95,10 +103,10 @@ public class CompositeLogging
      * @param msg the message to log.
      * @param loggingCallable the callable function.
      */
-    protected void log(final String msg, final LoggingCall loggingCallable) {
+    protected void log(@NonNull final String msg, @NonNull final LoggingCall loggingCallable) {
         boolean fallbackNeeded = false;
 
-        for (LoggingAdapter preferred: getPreferred()) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
             try {
                 loggingCallable.log(preferred, msg);
             } catch (final Throwable error) {
@@ -107,9 +115,37 @@ public class CompositeLogging
         }
 
         if (fallbackNeeded) {
-            for (LoggingAdapter fallback : getFallback()) {
+            for (@NonNull final LoggingAdapter fallback : getFallback()) {
                 try {
                     loggingCallable.log(fallback, msg);
+                } catch (final Throwable error) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Logs given msg, using a function interface.
+     * @param category the category.
+     * @param msg the message to log.
+     * @param loggingCallable the callable function.
+     */
+    protected void log(
+        @NonNull final String category, @NonNull final String msg, @NonNull final LoggingCall loggingCallable) {
+        boolean fallbackNeeded = false;
+
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
+            try {
+                loggingCallable.log(preferred, category, msg);
+            } catch (final Throwable error) {
+                fallbackNeeded = true;
+            }
+        }
+
+        if (fallbackNeeded) {
+            for (@NonNull final LoggingAdapter fallback : getFallback()) {
+                try {
+                    loggingCallable.log(fallback, category, msg);
                 } catch (final Throwable error) {
                 }
             }
@@ -121,23 +157,54 @@ public class CompositeLogging
      * @param loggingCallable the function pointer.
      * @return the outcome of the check.
      */
-    protected boolean isEnabled(final LoggingCall loggingCallable) {
+    protected boolean isEnabled(@NonNull final LoggingCall loggingCallable) {
         boolean result = true;
 
         boolean fallbackNeeded = false;
 
-        for (LoggingAdapter preferred: getPreferred()) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
             try {
                 result = result && loggingCallable.isEnabled(preferred);
+            } catch (@NonNull final Throwable error) {
+                fallbackNeeded = true;
+            }
+        }
+
+        if (fallbackNeeded) {
+            for (@NonNull final LoggingAdapter fallback : getFallback()) {
+                try {
+                    result = result && loggingCallable.isEnabled(fallback);
+                } catch (@NonNull final Throwable error) {
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Delegates the check regarding whether a level is enabled to given callable.
+     * @param loggingCallable the function pointer.
+     * @param category the category.
+     * @return the outcome of the check.
+     */
+    protected boolean isEnabled(@NonNull final LoggingCall loggingCallable, @NonNull final String category) {
+        boolean result = true;
+
+        boolean fallbackNeeded = false;
+
+        for (final LoggingAdapter preferred: getPreferred()) {
+            try {
+                result = result && loggingCallable.isEnabled(preferred, category);
             } catch (final Throwable error) {
                 fallbackNeeded = true;
             }
         }
 
         if (fallbackNeeded) {
-            for (LoggingAdapter fallback : getFallback()) {
+            for (final LoggingAdapter fallback : getFallback()) {
                 try {
-                    result = result && loggingCallable.isEnabled(fallback);
+                    result = result && loggingCallable.isEnabled(fallback, category);
                 } catch (final Throwable error) {
                 }
             }
@@ -147,8 +214,13 @@ public class CompositeLogging
     }
 
     @Override
-    public void error(final String msg) {
+    public void error(@NonNull final String msg) {
         log(msg, new LoggingErrorCall());
+    }
+
+    @Override
+    public void error(@NonNull final String category, @NonNull final String msg) {
+        log(category, msg, new LoggingErrorCall());
     }
 
     @Override
@@ -157,15 +229,32 @@ public class CompositeLogging
     }
 
     @Override
+    public boolean isErrorEnabled(@NonNull final String category) {
+        return isEnabled(new LoggingErrorCall(), category);
+    }
+
+    @Override
     public void setErrorEnabled(final boolean flag) {
-        for (LoggingAdapter preferred: getPreferred()) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
             preferred.setErrorEnabled(flag);
         }
     }
 
     @Override
-    public void warn(final String msg) {
+    public void setErrorEnabled(@NonNull final String category, final boolean flag) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
+            preferred.setErrorEnabled(category, flag);
+        }
+    }
+
+    @Override
+    public void warn(@NonNull final String msg) {
         log(msg, new LoggingWarnCall());
+    }
+
+    @Override
+    public void warn(@NonNull final String category, @NonNull final String msg) {
+        log(category, msg, new LoggingWarnCall());
     }
 
     @Override
@@ -174,15 +263,32 @@ public class CompositeLogging
     }
 
     @Override
+    public boolean isWarnEnabled(@NonNull final String category) {
+        return isEnabled(new LoggingWarnCall(), category);
+    }
+
+    @Override
     public void setWarnEnabled(final boolean flag) {
-        for (LoggingAdapter preferred: getPreferred()) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
             preferred.setWarnEnabled(flag);
         }
     }
 
     @Override
-    public void info(final String msg) {
+    public void setWarnEnabled(@NonNull final String category, final boolean flag) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
+            preferred.setWarnEnabled(category, flag);
+        }
+    }
+
+    @Override
+    public void info(@NonNull final String msg) {
         log(msg, new LoggingInfoCall());
+    }
+
+    @Override
+    public void info(@NonNull final String category, @NonNull final String msg) {
+        log(category, msg, new LoggingInfoCall());
     }
 
     @Override
@@ -191,15 +297,32 @@ public class CompositeLogging
     }
 
     @Override
+    public boolean isInfoEnabled(@NonNull final String category) {
+        return isEnabled(new LoggingInfoCall(), category);
+    }
+
+    @Override
     public void setInfoEnabled(final boolean flag) {
-        for (LoggingAdapter preferred: getPreferred()) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
             preferred.setInfoEnabled(flag);
         }
     }
 
     @Override
-    public void debug(final String msg) {
+    public void setInfoEnabled(@NonNull final String category, final boolean flag) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
+            preferred.setInfoEnabled(category, flag);
+        }
+    }
+
+    @Override
+    public void debug(@NonNull final String msg) {
         log(msg, new LoggingDebugCall());
+    }
+
+    @Override
+    public void debug(@NonNull final String category, @NonNull final String msg) {
+        log(category, msg, new LoggingDebugCall());
     }
 
     @Override
@@ -208,15 +331,32 @@ public class CompositeLogging
     }
 
     @Override
+    public boolean isDebugEnabled(@NonNull final String category) {
+        return isEnabled(new LoggingDebugCall(), category);
+    }
+
+    @Override
     public void setDebugEnabled(final boolean flag) {
-        for (LoggingAdapter preferred: getPreferred()) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
             preferred.setDebugEnabled(flag);
         }
     }
 
     @Override
-    public void trace(final String msg) {
+    public void setDebugEnabled(@NonNull final String category, final boolean flag) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
+            preferred.setDebugEnabled(category, flag);
+        }
+    }
+
+    @Override
+    public void trace(@NonNull final String msg) {
         log(msg, new LoggingTraceCall());
+    }
+
+    @Override
+    public void trace(@NonNull final String category, @NonNull final String msg) {
+        log(category, msg, new LoggingTraceCall());
     }
 
     @Override
@@ -225,13 +365,26 @@ public class CompositeLogging
     }
 
     @Override
+    public boolean isTraceEnabled(@NonNull final String category) {
+        return isEnabled(new LoggingTraceCall(), category);
+    }
+
+    @Override
     public void setTraceEnabled(final boolean flag) {
-        for (LoggingAdapter preferred: getPreferred()) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
             preferred.setTraceEnabled(flag);
         }
     }
 
     @Override
+    public void setTraceEnabled(@NonNull final String category, final boolean flag) {
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
+            preferred.setTraceEnabled(category, flag);
+        }
+    }
+
+    @Override
+    @NonNull
     public LoggingContext getLoggingContext() {
         return this.context;
     }

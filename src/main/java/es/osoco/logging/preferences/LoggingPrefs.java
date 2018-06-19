@@ -18,6 +18,8 @@ import es.osoco.logging.helper.EnvironmentHelper;
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.ClassAnnotationMatchProcessor;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.MethodAnnotationMatchProcessor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Executable;
@@ -25,6 +27,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * <p>Finds out the logging preferences in the context of the caller.</p>
@@ -202,6 +207,7 @@ public class LoggingPrefs {
      * Retrieves the default preferred mechanism.
      * @return such mechanism.
      */
+    @NonNull
     protected String[] getDefaultPreferred() {
         return
             EnvironmentHelper.getInstance().retrieveStringArrayFromSystemPropertyOrEnvironmentVariableOrElse(
@@ -214,6 +220,7 @@ public class LoggingPrefs {
      * Retrieves the default fallback mechanism.
      * @return such mechanism.
      */
+    @NonNull
     protected String[] getDefaultFallback() {
         return
             EnvironmentHelper.getInstance().retrieveStringArrayFromSystemPropertyOrEnvironmentVariableOrElse(
@@ -226,12 +233,23 @@ public class LoggingPrefs {
      * Retrieves the preferred logging of current context.
      * @return the ordered array of {@link es.osoco.logging.adapter.LoggingAdapterBuilderRegistry} keys.
      */
+    @NonNull
     public String[] myPreferredLogging() {
-        final String[] result;
+
+        @NonNull final String[] result;
+
+        @Nullable final String[] aux;
+
         if (discoverLoggingAnnotationsEnabled()) {
-            result = findPreferred(Thread.currentThread().getStackTrace());
+            aux = findPreferred(Thread.currentThread().getStackTrace());
         } else {
+            aux = null;
+        }
+
+        if (aux == null) {
             result = getDefaultPreferred();
+        } else {
+            result = aux;
         }
 
         return result;
@@ -241,12 +259,22 @@ public class LoggingPrefs {
      * Retrieves the fallback logging of current context.
      * @return the ordered array of {@link es.osoco.logging.adapter.LoggingAdapterBuilderRegistry} keys.
      */
+    @NonNull
     public String[] myFallbackLogging() {
-        final String[] result;
+        @NonNull final String[] result;
+
+        @Nullable final String[] aux;
+
         if (discoverLoggingAnnotationsEnabled()) {
-            result = findFallback(Thread.currentThread().getStackTrace());
+            aux = findFallback(Thread.currentThread().getStackTrace());
         } else {
+            aux = null;
+        }
+
+        if (aux == null) {
             result = getDefaultFallback();
+        } else {
+            result = aux;
         }
 
         return result;
@@ -257,7 +285,7 @@ public class LoggingPrefs {
      * @param className the class name.
      * @param prefs the preferences.
      */
-    public void addClassPreferred(final String className, final String[] prefs) {
+    public void addClassPreferred(@NonNull final String className, @NonNull final String[] prefs) {
         getClassPreferred().put(className, prefs);
     }
 
@@ -266,7 +294,7 @@ public class LoggingPrefs {
      * @param className the class name.
      * @param prefs the preferences.
      */
-    public void addClassFallback(final String className, final String[] prefs) {
+    public void addClassFallback(@NonNull final String className, @NonNull final String[] prefs) {
         getClassFallback().put(className, prefs);
     }
 
@@ -276,7 +304,7 @@ public class LoggingPrefs {
      * @param method the method name.
      * @return the key.
      */
-    protected String buildMethodKey(final String clazz, final String method) {
+    protected String buildMethodKey(@NonNull final String clazz, @NonNull final String method) {
         return clazz + "::" + method;
     }
 
@@ -285,7 +313,7 @@ public class LoggingPrefs {
      * @param element the stack trace element.
      * @param prefs the preferences.
      */
-    public void addMethodPreferred(final StackTraceElement element, final String[] prefs) {
+    public void addMethodPreferred(@NonNull final StackTraceElement element, @NonNull final String[] prefs) {
         addMethodPreferred(buildMethodKey(element.getClassName(), element.getMethodName()), prefs);
     }
 
@@ -294,7 +322,7 @@ public class LoggingPrefs {
      * @param key the method key.
      * @param prefs the preferences.
      */
-    protected void addMethodPreferred(final String key, final String[] prefs) {
+    protected void addMethodPreferred(@NonNull final String key, @NonNull final String[] prefs) {
         getMethodPreferred().put(key, prefs);
     }
 
@@ -303,7 +331,7 @@ public class LoggingPrefs {
      * @param key the method key.
      * @param prefs the preferences.
      */
-    public void addMethodFallback(final String key, final String[] prefs) {
+    public void addMethodFallback(@NonNull final String key, @NonNull final String[] prefs) {
         getMethodFallback().put(key, prefs);
     }
 
@@ -312,6 +340,7 @@ public class LoggingPrefs {
      * @param stackTrace the stack trace.
      * @return the preferred logging keys.
      */
+    @Nullable
     protected String[] findPreferred(final StackTraceElement[] stackTrace) {
         return find(stackTrace, getClassPreferred(), getMethodPreferred(), getDefaultPreferred());
     }
@@ -321,6 +350,7 @@ public class LoggingPrefs {
      * @param stackTrace the stack trace.
      * @return the fallback logging keys.
      */
+    @Nullable
     protected String[] findFallback(final StackTraceElement[] stackTrace) {
         return find(stackTrace, getClassFallback(), getMethodFallback(), getDefaultFallback());
     }
@@ -333,16 +363,18 @@ public class LoggingPrefs {
      * @param defaultValue the default value.
      * @return the preferred logging keys.
      */
+    @Nullable
     protected String[] find(
-        final StackTraceElement[] stackTrace,
-        final Map<String, String[]> discoveredClasses,
-        final Map<String, String[]> discoveredMethods,
-        final String[] defaultValue) {
+        @NonNull final StackTraceElement[] stackTrace,
+        @NonNull final Map<String, String[]> discoveredClasses,
+        @NonNull final Map<String, String[]> discoveredMethods,
+        @NonNull final String[] defaultValue) {
 
-        String[] result = defaultValue;
+        @Nullable String[] result = defaultValue;
 
-        for (final StackTraceElement stackElement : stackTrace) {
-            final String[] prefs = findElement(stackElement, discoveredClasses, discoveredMethods, null);
+        for (@NonNull final StackTraceElement stackElement : stackTrace) {
+            @Nullable final String[] prefs =
+                findElement(stackElement, discoveredClasses, discoveredMethods, null);
             if (prefs != null) {
                 result = prefs;
                 break;
@@ -360,20 +392,22 @@ public class LoggingPrefs {
      * @param defaultValue the default values if none found.
      * @return the preferred logging keys.
      */
+    @Nullable
     protected String[] findElement(
-        final StackTraceElement stackElement,
-        final Map<String, String[]> discoveredClasses,
-        final Map<String, String[]> discoveredMethods,
-        final String[] defaultValue) {
-        final String[] result;
+        @NonNull final StackTraceElement stackElement,
+        @NonNull final Map<String, String[]> discoveredClasses,
+        @NonNull final Map<String, String[]> discoveredMethods,
+        @Nullable final String[] defaultValue) {
 
-        final String className = stackElement.getClassName();
-        final String method = stackElement.getMethodName();
-        final String[] methodPrefs = discoveredMethods.get(buildMethodKey(className, method));
+        @Nullable final String[] result;
+
+        @NonNull final String className = stackElement.getClassName();
+        @NonNull final String method = stackElement.getMethodName();
+        @Nullable final String[] methodPrefs = discoveredMethods.get(buildMethodKey(className, method));
         if (methodPrefs != null) {
             result = methodPrefs;
         } else {
-            final String[] classPrefs = discoveredClasses.get(className);
+            @Nullable final String[] classPrefs = discoveredClasses.get(className);
             if (classPrefs != null) {
                 result = classPrefs;
             } else {
@@ -387,26 +421,29 @@ public class LoggingPrefs {
     /**
      * Base class for the inline processors.
      */
+    @EqualsAndHashCode
+    @ToString
     protected abstract static class AbstractLoggingAnnotationMatchProcessor {
 
         /**
          * The preferences.
          */
+        @NonNull
         private LoggingPrefs preferences;
 
         /**
          * Creates a new instance to use given preferences.
          * @param prefs the {@link LoggingPrefs}.
          */
-        public AbstractLoggingAnnotationMatchProcessor(final LoggingPrefs prefs) {
-            immutableSetPreferences(prefs);
+        public AbstractLoggingAnnotationMatchProcessor(@NonNull final LoggingPrefs prefs) {
+            this.preferences = prefs;
         }
 
         /**
          * Specifies the proferences to use.
          * @param prefs such {@link LoggingPrefs}.
          */
-        protected final void immutableSetPreferences(final LoggingPrefs prefs) {
+        protected final void immutableSetPreferences(@NonNull final LoggingPrefs prefs) {
             this.preferences = prefs;
         }
 
@@ -414,7 +451,7 @@ public class LoggingPrefs {
          * Specifies the preferences to use. Override me if necessary.
          * @param prefs such {@link LoggingPrefs}.
          */
-        @SuppressWarnings("unused") protected void setPreferences(final LoggingPrefs prefs) {
+        @SuppressWarnings("unused") protected void setPreferences(@NonNull final LoggingPrefs prefs) {
             immutableSetPreferences(prefs);
         }
 
@@ -422,6 +459,7 @@ public class LoggingPrefs {
          * Retrieves the preferences.
          * @return such preferences.
          */
+        @NonNull
         public LoggingPrefs getPreferences() {
             return preferences;
         }
@@ -434,7 +472,11 @@ public class LoggingPrefs {
          * @param prefs the preferences.
          */
         protected void match(
-            final Class<?> clazz, final String key, final Annotation annotation, final LoggingPrefs prefs) {
+            @NonNull final Class<?> clazz,
+            @NonNull final String key,
+            @NonNull final Annotation annotation,
+            @NonNull final LoggingPrefs prefs) {
+
             try {
                 final Class<? extends Annotation> type = annotation.annotationType();
                 final Method preferredAccessor = type.getDeclaredMethod("preferred");
@@ -442,7 +484,8 @@ public class LoggingPrefs {
                 final Method fallbackAccessor = type.getDeclaredMethod("fallback");
                 final String[] fallback = (String[]) fallbackAccessor.invoke(annotation);
                 processMatch(clazz, key, preferred, fallback, prefs);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+
+            } catch (@NonNull final IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
         }
@@ -456,12 +499,18 @@ public class LoggingPrefs {
          * @param prefs the {@link LoggingPrefs} instance.
          */
         protected abstract void processMatch(
-            Class<?> clazz, String key, String[] preferred, String[] fallback, LoggingPrefs prefs);
+            @NonNull Class<?> clazz,
+            @NonNull String key,
+            @NonNull String[] preferred,
+            @NonNull String[] fallback,
+            @NonNull LoggingPrefs prefs);
     }
 
     /**
      * Scans the stack trace looking for annotated methods.
      */
+    @EqualsAndHashCode(callSuper = true)
+    @ToString
     protected static class MethodLoggingAnnotationMatchProcessor
         extends AbstractLoggingAnnotationMatchProcessor
         implements MethodAnnotationMatchProcessor {
@@ -470,12 +519,12 @@ public class LoggingPrefs {
          * Creates a new instance to use given preferences.
          * @param prefs the {@link LoggingPrefs}.
          */
-        public MethodLoggingAnnotationMatchProcessor(final LoggingPrefs prefs) {
+        public MethodLoggingAnnotationMatchProcessor(@NonNull final LoggingPrefs prefs) {
             super(prefs);
         }
 
         @Override
-        public void processMatch(final Class<?> annotatedClass, final Executable method) {
+        public void processMatch(@NonNull final Class<?> annotatedClass, @NonNull final Executable method) {
             processMatch(annotatedClass, method, getPreferences());
         }
 
@@ -486,7 +535,7 @@ public class LoggingPrefs {
          * @param prefs the {@link LoggingPrefs}.
          */
         protected void processMatch(
-            final Class<?> annotatedClass, final Executable method, final LoggingPrefs prefs) {
+            @NonNull final Class<?> annotatedClass, @NonNull final Executable method, @NonNull final LoggingPrefs prefs) {
             match(
                 annotatedClass,
                 prefs.buildMethodKey(annotatedClass.getName(), method.getName()),
@@ -496,11 +545,12 @@ public class LoggingPrefs {
 
         @Override
         protected void processMatch(
-            final Class<?> className,
-            final String key,
-            final String[] preferred,
-            final String[] fallback,
-            final LoggingPrefs prefs) {
+            @NonNull final Class<?> className,
+            @NonNull final String key,
+            @NonNull final String[] preferred,
+            @NonNull final String[] fallback,
+            @NonNull final LoggingPrefs prefs) {
+
             prefs.addMethodPreferred(key, preferred);
             prefs.addMethodFallback(key, fallback);
         }
@@ -509,6 +559,8 @@ public class LoggingPrefs {
     /**
      * Scans the stack trace looking for annotated classes.
      */
+    @EqualsAndHashCode(callSuper = true)
+    @ToString
     protected static class ClassLoggingAnnotationMatchProcessor
         extends AbstractLoggingAnnotationMatchProcessor
         implements ClassAnnotationMatchProcessor {
@@ -517,23 +569,26 @@ public class LoggingPrefs {
          * Creates a new instance to use given preferences.
          * @param prefs the {@link LoggingPrefs}.
          */
-        public ClassLoggingAnnotationMatchProcessor(final LoggingPrefs prefs) {
+        public ClassLoggingAnnotationMatchProcessor(@NonNull final LoggingPrefs prefs) {
             super(prefs);
         }
 
         @Override
-        public void processMatch(final Class<?> annotatedClass) {
+        public void processMatch(@NonNull final Class<?> annotatedClass) {
             match(
-                annotatedClass, annotatedClass.getName(), annotatedClass.getAnnotation(es.osoco.logging.annotations.LoggingPreferences.class), getPreferences());
+                annotatedClass,
+                annotatedClass.getName(),
+                annotatedClass.getAnnotation(es.osoco.logging.annotations.LoggingPreferences.class),
+                getPreferences());
         }
 
         @Override
         protected void processMatch(
-            final Class<?> annotatedClass,
-            final String key,
-            final String[] preferred,
-            final String[] fallback,
-            final LoggingPrefs prefs) {
+            @NonNull final Class<?> annotatedClass,
+            @NonNull final String key,
+            @NonNull final String[] preferred,
+            @NonNull String[] fallback,
+            @NonNull final LoggingPrefs prefs) {
             prefs.addClassPreferred(key, preferred);
             prefs.addClassFallback(key, fallback);
         }

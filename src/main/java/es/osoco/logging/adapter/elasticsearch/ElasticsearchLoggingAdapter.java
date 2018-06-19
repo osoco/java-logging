@@ -16,13 +16,12 @@ package es.osoco.logging.adapter.elasticsearch;
 
 import es.osoco.logging.LoggingContext;
 import es.osoco.logging.adapter.AbstractLoggingAdapter;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 
@@ -32,6 +31,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * {@link es.osoco.logging.adapter.LoggingAdapter} for ElasticSearch, based on a REST client.
@@ -45,21 +48,23 @@ public class ElasticsearchLoggingAdapter
     /**
      * The REST client.
      */
+    @Nullable
     private RestClient restClient;
 
     /**
      * Creates a new {@link ElasticsearchLoggingAdapter} with given configuration.
      * @param config the {@link ElasticSearchLoggingConfiguration}.
      */
-    public ElasticsearchLoggingAdapter(final ElasticSearchLoggingConfiguration config) {
+    public ElasticsearchLoggingAdapter(@NonNull final ElasticSearchLoggingConfiguration config) {
         super(config);
+        this.restClient = null;
     }
 
     /**
      * Specifies the Rest client.
      * @param client such instance.
      */
-    protected final void immutableSetRestClient(final RestClient client) {
+    protected final void immutableSetRestClient(@NonNull final RestClient client) {
         this.restClient = client;
     }
 
@@ -68,7 +73,7 @@ public class ElasticsearchLoggingAdapter
      * @param client such instance.
      */
     @SuppressWarnings("unused")
-    protected void setRestClient(final RestClient client) {
+    protected void setRestClient(@NonNull final RestClient client) {
         immutableSetRestClient(client);
     }
 
@@ -76,6 +81,7 @@ public class ElasticsearchLoggingAdapter
      * Retrieves the Rest client.
      * @return such instance.
      */
+    @Nullable
     protected final RestClient immutableGetRestClient() {
         return this.restClient;
     }
@@ -85,10 +91,11 @@ public class ElasticsearchLoggingAdapter
      * @return such instance.
      */
     @SuppressWarnings("unused")
+    @NonNull
     public RestClient getRestClient() {
         final RestClient result;
 
-        final RestClient aux = immutableGetRestClient();
+        @Nullable final RestClient aux = immutableGetRestClient();
 
         if (aux == null) {
             result = buildRestClient();
@@ -104,6 +111,7 @@ public class ElasticsearchLoggingAdapter
      * Builds the REST client.
      * @return such {@link RestClient} instance.
      */
+    @NonNull
     protected RestClient buildRestClient() {
         final RestClient result =
             RestClient.builder(
@@ -118,45 +126,56 @@ public class ElasticsearchLoggingAdapter
     }
 
     @Override
-    protected void logError(final String msg) {
-        logToElasticSearch(msg, getLoggingContext());
+    protected void logError(@Nullable final String category, @NonNull final String msg) {
+        logToElasticSearch(category, msg, getLoggingContext());
     }
 
     @Override
-    protected void logWarn(final String msg) {
-        logToElasticSearch(msg, getLoggingContext());
+    protected void logWarn(@Nullable final String category, @NonNull final String msg) {
+        logToElasticSearch(category, msg, getLoggingContext());
     }
 
     @Override
-    protected void logInfo(final String msg) {
-        logToElasticSearch(msg, getLoggingContext());
+    protected void logInfo(@Nullable final String category, @NonNull final String msg) {
+        logToElasticSearch(category, msg, getLoggingContext());
     }
 
     @Override
-    protected void logDebug(final String msg) {
-        logToElasticSearch(msg, getLoggingContext());
+    protected void logDebug(@Nullable final String category, @NonNull final String msg) {
+        logToElasticSearch(category, msg, getLoggingContext());
     }
 
     @Override
-    protected void logTrace(final String msg) {
-        logToElasticSearch(msg, getLoggingContext());
+    protected void logTrace(@Nullable final String category, @NonNull final String msg) {
+        logToElasticSearch(category, msg, getLoggingContext());
     }
 
-    protected void logToElasticSearch(final String msg, final LoggingContext ctx) {
-        RestClient restClient = getRestClient();
+    protected void logToElasticSearch(
+        @Nullable final String category, @NonNull final String msg, @NonNull final LoggingContext ctx) {
+        @NonNull RestClient restClient = getRestClient();
 
         final long id = System.currentTimeMillis() / 1000;
-        final String application = ctx.get("application");
-        final String event = ctx.get("event");
-        final String useCase = ctx.get("useCase");
 
-        final LocalDateTime now = LocalDateTime.now();
+        @Nullable final String application = ctx.get("application");
+        @Nullable final String event = ctx.get("event");
+        @Nullable final String useCase = ctx.get("useCase");
 
-        final StringBuilder data = new StringBuilder("{");
+        @NonNull final LocalDateTime now = LocalDateTime.now();
+
+        @NonNull final StringBuilder data = new StringBuilder("{");
 
         boolean firstElement = true;
 
+        if (category != null) {
+            data.append("\n    \"category\": \"");
+            data.append(category);
+            data.append("\"");
+            firstElement = false;
+        }
         if (event != null) {
+            if (!firstElement) {
+                data.append(",");
+            }
             data.append("\n    \"events\" : \"");
             data.append(escapeDoubleQuotes(event));
             data.append("\"");
@@ -186,13 +205,13 @@ public class ElasticsearchLoggingAdapter
         data.append(TIMESTAMP_FORMATTER.format(now));
         data.append("\"\n}");
 
-        final String content = data.toString();
+        @NonNull final String content = data.toString();
 
-        final HttpEntity entity =
+        @NonNull final HttpEntity entity =
             new NStringEntity(content, ContentType.APPLICATION_JSON);
 
         try {
-            final Response indexResponse =
+            @NonNull final Response indexResponse =
                 restClient.performRequest(
                     "PUT",
                     "/log-" + INDEX_FORMATTER.format(now) + "/" + application + "/" + id,
@@ -209,7 +228,7 @@ public class ElasticsearchLoggingAdapter
     }
 
     public void cleanup() {
-        final RestClient restClient = getRestClient();
+        @Nullable final RestClient restClient = getRestClient();
 
         if (restClient != null) {
             try {
@@ -223,14 +242,24 @@ public class ElasticsearchLoggingAdapter
         setLoggingContext(null);
     }
 
-    protected String escapeDoubleQuotes(final String txt) {
+    /**
+     * Escapes any double-quotes in given text.
+     * @param txt the text to escape.
+     * @return the resulting text.
+     */
+    @NonNull
+    protected String escapeDoubleQuotes(@NonNull final String txt) {
         final Matcher matcher = DOUBLE_QUOTES_ESCAPER.matcher(txt);
         return matcher.replaceAll("\\\\\"");
     }
 
+    @NonNull
     public static final DateTimeFormatter INDEX_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+    @NonNull
     public static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
+    @NonNull
     protected static final Pattern DOUBLE_QUOTES_ESCAPER = Pattern.compile("\"");
 
     protected static int CURRENT_COUNT = 0;

@@ -17,6 +17,8 @@ package es.osoco.logging.adapter.awslambda;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import es.osoco.logging.adapter.AbstractLoggingAdapter;
 import es.osoco.logging.adapter.LoggingAdapter;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -42,32 +44,32 @@ public class AwsLambdaLoggingAdapter
      * Logs a message using the {@link LambdaLogger}.
      * @param msg the message to log.
      */
-    protected void log(final String msg) {
-        getLoggingConfiguration().getLambdaLogger().log(msg);
+    protected void log(@Nullable final String category, @NonNull final String msg) {
+        getLoggingConfiguration().getLambdaLogger().log(buildCategoryPrefix(category) + msg);
     }
 
     @Override
-    public void logError(final String msg) {
-        log(msg);
+    public void logError(@Nullable final String category, @NonNull final String msg) {
+        log(category, msg);
     }
 
     @Override
-    public void logWarn(final String msg) {
-        log(msg);
+    public void logWarn(@Nullable final String category, @NonNull final String msg) {
+        log(category, msg);
     }
 
     @Override
-    public void logInfo(final String msg) {
-        log(msg);
+    public void logInfo(@Nullable final String category, @NonNull final String msg) {
+        log(category, msg);
     }
 
     @Override
-    public void logDebug(final String msg) {
-        log(msg);
+    public void logDebug(@Nullable final String category, @NonNull final String msg) {
+        log(category, msg);
     }
 
     @Override
-    public void logTrace(final String msg) {
-        log(msg);
+    public void logTrace(@Nullable final String category, @NonNull final String msg) {
+        log(category, msg);
     }
 }

@@ -15,6 +15,8 @@
 package es.osoco.logging.adapter;
 
 import es.osoco.logging.config.LoggingConfiguration;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,6 +66,7 @@ public class LoggingAdapterBuilderRegistry {
      * @return such map.
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     protected final <T extends LoggingAdapterBuilder<?, ?>> Map<String, T> immutableGetMap() {
         return (Map<String, T>) this.map;
     }
@@ -75,7 +78,8 @@ public class LoggingAdapterBuilderRegistry {
      * @return the associated configuration.
      */
     @SuppressWarnings("unchecked")
-    public <T extends LoggingAdapterBuilder> T get(final String key) {
+    @Nullable
+    public <T extends LoggingAdapterBuilder> T get(@NonNull final String key) {
         return (T) immutableGetMap().get(key);
     }
 
@@ -86,7 +90,7 @@ public class LoggingAdapterBuilderRegistry {
      * @param <T> the type of the builder.
      */
     @SuppressWarnings("unchecked")
-    public <T extends LoggingAdapterBuilder> void put(final String key, final T builder) {
+    public <T extends LoggingAdapterBuilder> void put(@NonNull final String key, @NonNull final T builder) {
         immutableGetMap().put(key, builder);
     }
 }

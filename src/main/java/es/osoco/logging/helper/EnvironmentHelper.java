@@ -14,6 +14,9 @@
 */
 package es.osoco.logging.helper;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Utility methods when dealing with environment variables and system properties.
  */
@@ -26,6 +29,7 @@ public class EnvironmentHelper {
         /**
          * The singleton instance.
          */
+        @NonNull
         public static final EnvironmentHelper SINGLETON = new EnvironmentHelper();
     }
 
@@ -35,6 +39,7 @@ public class EnvironmentHelper {
      * Retrieves the singleton instance.
      * @return such instance.
      */
+    @NonNull
     public static EnvironmentHelper getInstance() {
         return EnvironmentHelperSingletonContainer.SINGLETON;
     }
@@ -47,15 +52,16 @@ public class EnvironmentHelper {
      * @param defaultValue the default value.
      * @return such value.
      */
+    @Nullable
     public String retrieveStringFromSystemPropertyOrEnvironmentVariableOrElse(
-        final String sysPropName, final String envVarName, final String defaultValue) {
+        @NonNull final String sysPropName, @NonNull final String envVarName, @Nullable final String defaultValue) {
 
-        final String result;
+        @Nullable final String result;
 
-        final String sysProp = System.getProperty(sysPropName);
+        @Nullable final String sysProp = System.getProperty(sysPropName);
 
         if (sysProp == null) {
-            final String envVar = System.getenv(envVarName);
+            @Nullable final String envVar = System.getenv(envVarName);
 
             if (envVar == null) {
                 result = defaultValue;
@@ -78,14 +84,15 @@ public class EnvironmentHelper {
      * @param defaultValue the default value.
      * @return such value.
      */
+    @NonNull
     public String[] retrieveStringArrayFromSystemPropertyOrEnvironmentVariableOrElse(
-        final String sysPropName, final String envVarName, final String[] defaultValue) {
+        @NonNull final String sysPropName, @NonNull final String envVarName, @NonNull final String[] defaultValue) {
 
-        final String[] result;
+        @NonNull final String[] result;
 
-        final String aux;
+        @Nullable final String aux;
 
-        final String sysProp = System.getProperty(sysPropName);
+        @Nullable final String sysProp = System.getProperty(sysPropName);
 
         if (sysProp == null) {
             final String envVar = System.getenv(envVarName);
@@ -117,11 +124,11 @@ public class EnvironmentHelper {
      * @return such value.
      */
     public int retrieveIntFromSystemPropertyOrEnvironmentVariableOrElse(
-        final String sysPropName, final String envVarName, final int defaultValue) {
+        @NonNull final String sysPropName, @NonNull final String envVarName, final int defaultValue) {
         int result;
 
-        final String value =
-            retrieveStringFromSystemPropertyOrEnvironmentVariableOrElse(sysPropName, envVarName, null);
+        @Nullable final String value =
+            retrieveStringFromSystemPropertyOrEnvironmentVariableOrElse(sysPropName, envVarName, (String) null);
 
         if (value == null) {
             result = defaultValue;
@@ -145,12 +152,12 @@ public class EnvironmentHelper {
      * @return such value.
      */
     public boolean retrieveBooleanFromSystemPropertyOrEnvironmentVariableOrElse(
-        final String sysPropName, final String envVarName, final boolean defaultValue) {
+        @NonNull final String sysPropName, @NonNull final String envVarName, final boolean defaultValue) {
 
         final boolean result;
 
-        final String value =
-            retrieveStringFromSystemPropertyOrEnvironmentVariableOrElse(sysPropName, envVarName, null);
+        @Nullable final String value =
+            retrieveStringFromSystemPropertyOrEnvironmentVariableOrElse(sysPropName, envVarName, (String) null);
 
         if (value == null) {
             result = defaultValue;

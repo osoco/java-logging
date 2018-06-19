@@ -16,6 +16,8 @@ package es.osoco.logging.adapter;
 
 import es.osoco.logging.Logging;
 import es.osoco.logging.config.LoggingConfiguration;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Knows how to build specific {@link LoggingAdapter}s.
@@ -28,17 +30,20 @@ public interface LoggingAdapterBuilder<C extends LoggingConfiguration, L extends
      * Retrieves the registry key. Override this if necessary.
      * @return such key.
      */
+    @NonNull
     String getRegistryKey();
 
     /**
      * Retrieves the {@link LoggingConfiguration} to use. Override this if necessary.
      * @return such instance.
      */
+    @NonNull
     C getLoggingConfiguration();
 
     /**
      * Builds a new {@link Logging}.
      * @return such adapter.
      */
+    @Nullable
     L build();
 }

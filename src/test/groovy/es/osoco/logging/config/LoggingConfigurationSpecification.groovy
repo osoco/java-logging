@@ -54,6 +54,6 @@ class LoggingConfigurationSpecification
         logging.errorEnabled
         ! logging.infoEnabled
         ! logging.debugEnabled
-        ! logging.trace()
+        ! logging.traceEnabled
     }
 }

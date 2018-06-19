@@ -15,20 +15,36 @@
 package es.osoco.logging.impl;
 
 import es.osoco.logging.adapter.LoggingAdapter;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * Calls #debug(msg) and #isDebugEnabled() on a given adapter.
  */
+@EqualsAndHashCode
+@ToString
 public class LoggingDebugCall
     implements LoggingCall {
 
     @Override
-    public void log(final LoggingAdapter adapter, final String msg) {
+    public void log(@NonNull final LoggingAdapter adapter, @NonNull final String msg) {
         adapter.debug(msg);
     }
 
     @Override
-    public boolean isEnabled(final LoggingAdapter adapter) {
+    public void log(@NonNull final LoggingAdapter adapter, @NonNull final String category, @NonNull final String msg) {
+        adapter.debug(category, msg);
+    }
+
+    @Override
+    public boolean isEnabled(@NonNull final LoggingAdapter adapter) {
         return adapter.isDebugEnabled();
+    }
+
+    @Override
+    public boolean isEnabled(@NonNull final LoggingAdapter adapter, @NonNull final String category) {
+        return adapter.isDebugEnabled(category);
     }
 }
