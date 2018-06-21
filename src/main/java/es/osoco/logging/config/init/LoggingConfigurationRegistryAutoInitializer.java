@@ -14,7 +14,7 @@
 */
 package es.osoco.logging.config.init;
 
-import es.osoco.logging.adapter.jdk4.Jdk4LoggingConfiguration;
+import es.osoco.logging.adapter.jul.JulLoggingConfiguration;
 import es.osoco.logging.adapter.printstream.PrintStreamLoggingConfiguration;
 import es.osoco.logging.config.LoggingConfiguration;
 import es.osoco.logging.annotations.LoggingConfigurationProducer;
@@ -47,6 +47,6 @@ public class LoggingConfigurationRegistryAutoInitializer {
     @SuppressWarnings("unused")
     @LoggingConfigurationProducer(key = "java.util.logging")
     public LoggingConfiguration produceJdk4LoggingConfiguration() {
-        return new Jdk4LoggingConfiguration();
+        return new JulLoggingConfiguration();
     }
 }

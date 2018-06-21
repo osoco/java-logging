@@ -1,4 +1,4 @@
-package es.osoco.logging.adapter.jdk4;
+package es.osoco.logging.adapter.jul;
 
 import es.osoco.logging.adapter.LoggingAdapterBuilderRegistry;
 import es.osoco.logging.config.LoggingConfiguration;
@@ -13,17 +13,17 @@ import lombok.ToString;
  */
 @EqualsAndHashCode
 @ToString
-public class Jdk4LoggingConfigurationListener
+public class JulLoggingConfigurationListener
     implements LoggingConfigurationListener {
 
     @Override
     public void newLoggingConfigurationAvailable(@NonNull final LoggingConfiguration config) {
-        if (config instanceof Jdk4LoggingConfiguration) {
+        if (config instanceof JulLoggingConfiguration) {
             LoggingAdapterBuilderRegistry
                 .getInstance()
                 .put(
                     config.getRegistryKey(),
-                    new Jdk4LoggingAdapterBuilder((Jdk4LoggingConfiguration) config));
+                    new JulLoggingAdapterBuilder((JulLoggingConfiguration) config));
         }
     }
 }

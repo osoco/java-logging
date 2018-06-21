@@ -476,7 +476,7 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
 
     @Override
     public void error(@NonNull final String category, @NonNull final String msg) {
-        if (isErrorEnabled()) {
+        if (isErrorEnabled(category)) {
             logError(category, msg);
         }
     }
@@ -497,7 +497,7 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
 
     @Override
     public void warn(@NonNull final String category, @NonNull final String msg) {
-        if (isWarnEnabled()) {
+        if (isWarnEnabled(category)) {
             logWarn(category, msg);
         }
     }
@@ -518,7 +518,7 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
 
     @Override
     public void info(@NonNull final String category, @NonNull final String msg) {
-        if (isInfoEnabled()) {
+        if (isInfoEnabled(category)) {
             logInfo(category, msg);
         }
     }
@@ -539,7 +539,7 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
 
     @Override
     public void debug(@NonNull String category, @NonNull final String msg) {
-        if (isDebugEnabled()) {
+        if (isDebugEnabled(category)) {
             logDebug(category, msg);
         }
     }
@@ -560,7 +560,7 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
 
     @Override
     public void trace(@NonNull final String category, @NonNull final String msg) {
-        if (isTraceEnabled()) {
+        if (isTraceEnabled(category)) {
             logTrace(category, msg);
         }
     }
@@ -571,7 +571,6 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
      * @param msg the message.
      */
     protected abstract void logTrace(@Nullable String category, @NonNull String msg);
-
 
     /**
      * Builds a message prefix based on given category.
@@ -585,5 +584,4 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
     protected String buildCategoryPrefix(@Nullable final String category) {
         return (category == null) ? "" : "[" + category + "]:";
     }
-
 }

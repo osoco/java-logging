@@ -16,6 +16,7 @@ package es.osoco.logging.adapter;
 
 import es.osoco.logging.Logging;
 import es.osoco.logging.config.LoggingConfiguration;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -43,18 +44,27 @@ public abstract class AbstractLoggingAdapterBuilder<C extends LoggingConfigurati
 
     /**
      * Creates a new {@code AbstractLoggingAdapterBuilder}.
+     * @param config the {@link LoggingConfiguration}.
+     */
+    protected AbstractLoggingAdapterBuilder(@NonNull final C config) {
+        this(config.getRegistryKey(), config);
+    }
+
+    /**
+     * Creates a new {@code AbstractLoggingAdapterBuilder}.
      * @param regKey the registry key.
      * @param config the {@link LoggingConfiguration}.
      */
     protected AbstractLoggingAdapterBuilder(@NonNull final String regKey, @NonNull final C config) {
-        this.registryKey = regKey;
-        this.loggingConfiguration = config;
+        immutableSetRegistryKey(regKey);
+        immutableSetLoggingConfiguration(config);
     }
 
     /**
      * Specifies the registry key.
      * @param key the key.
      */
+    @EnsuresNonNull("registryKey")
     protected final void immutableSetRegistryKey(@NonNull final String key) {
         this.registryKey = key;
     }
@@ -91,6 +101,7 @@ public abstract class AbstractLoggingAdapterBuilder<C extends LoggingConfigurati
      * Specifies the {@link LoggingConfiguration} to use.
      * @param config such instance.
      */
+    @EnsuresNonNull("loggingConfiguration")
     protected final void immutableSetLoggingConfiguration(@NonNull final C config) {
         this.loggingConfiguration = config;
     }

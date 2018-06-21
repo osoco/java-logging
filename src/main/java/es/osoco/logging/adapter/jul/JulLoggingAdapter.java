@@ -1,4 +1,4 @@
-package es.osoco.logging.adapter.jdk4;
+package es.osoco.logging.adapter.jul;
 
 import es.osoco.logging.adapter.AbstractLoggingAdapter;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -15,10 +15,10 @@ import lombok.ToString;
  */
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class Jdk4LoggingAdapter
-    extends AbstractLoggingAdapter<Jdk4LoggingConfiguration> {
+public class JulLoggingAdapter
+    extends AbstractLoggingAdapter<JulLoggingConfiguration> {
 
-    public Jdk4LoggingAdapter(@NonNull final Jdk4LoggingConfiguration config) {
+    public JulLoggingAdapter(@NonNull final JulLoggingConfiguration config) {
         super(config);
     }
 

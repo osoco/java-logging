@@ -1,4 +1,4 @@
-package es.osoco.logging.adapter.jdk4;
+package es.osoco.logging.adapter.jul;
 
 import es.osoco.logging.adapter.AbstractLoggingConfiguration;
 
@@ -10,10 +10,10 @@ import lombok.ToString;
  */
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class Jdk4LoggingConfiguration
+public class JulLoggingConfiguration
     extends AbstractLoggingConfiguration {
 
-    public Jdk4LoggingConfiguration() {
+    public JulLoggingConfiguration() {
         super("java.util.logging");
     }
 }
