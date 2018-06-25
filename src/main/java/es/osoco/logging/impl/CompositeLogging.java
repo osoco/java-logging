@@ -126,6 +126,33 @@ public class CompositeLogging
 
     /**
      * Logs given msg, using a function interface.
+     * @param msg the message to log.
+     * @param loggingCallable the callable function.
+     */
+    protected void log(
+        @NonNull final String msg, @NonNull final Throwable error, @NonNull final LoggingCall loggingCallable) {
+        boolean fallbackNeeded = false;
+
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
+            try {
+                loggingCallable.log(preferred, msg, error);
+            } catch (final Throwable unexpected) {
+                fallbackNeeded = true;
+            }
+        }
+
+        if (fallbackNeeded) {
+            for (@NonNull final LoggingAdapter fallback : getFallback()) {
+                try {
+                    loggingCallable.log(fallback, msg, error);
+                } catch (final Throwable unexpected) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Logs given msg, using a function interface.
      * @param category the category.
      * @param msg the message to log.
      * @param loggingCallable the callable function.
@@ -147,6 +174,38 @@ public class CompositeLogging
                 try {
                     loggingCallable.log(fallback, category, msg);
                 } catch (final Throwable error) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Logs given error, using a function interface.
+     * @param category the category.
+     * @param msg the message to log.
+     * @param error the error.
+     * @param loggingCallable the callable function.
+     */
+    protected void log(
+        @NonNull final String category,
+        @NonNull final String msg,
+        @NonNull final Throwable error,
+        @NonNull final LoggingCall loggingCallable) {
+        boolean fallbackNeeded = false;
+
+        for (@NonNull final LoggingAdapter preferred: getPreferred()) {
+            try {
+                loggingCallable.log(preferred, category, msg, error);
+            } catch (final Throwable unexpected) {
+                fallbackNeeded = true;
+            }
+        }
+
+        if (fallbackNeeded) {
+            for (@NonNull final LoggingAdapter fallback : getFallback()) {
+                try {
+                    loggingCallable.log(fallback, category, msg, error);
+                } catch (final Throwable unexpected) {
                 }
             }
         }
@@ -224,6 +283,16 @@ public class CompositeLogging
     }
 
     @Override
+    public void error(@NonNull final String msg, @NonNull final Throwable error) {
+        log(msg, error, new LoggingErrorCall());
+    }
+
+    @Override
+    public void error(@NonNull final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        log(category, msg, error, new LoggingErrorCall());
+    }
+
+    @Override
     public boolean isErrorEnabled() {
         return isEnabled(new LoggingErrorCall());
     }
@@ -255,6 +324,16 @@ public class CompositeLogging
     @Override
     public void warn(@NonNull final String category, @NonNull final String msg) {
         log(category, msg, new LoggingWarnCall());
+    }
+
+    @Override
+    public void warn(@NonNull final String msg, @NonNull final Throwable error) {
+        log(msg, error, new LoggingWarnCall());
+    }
+
+    @Override
+    public void warn(@NonNull final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        log(category, msg, error, new LoggingWarnCall());
     }
 
     @Override
@@ -292,6 +371,16 @@ public class CompositeLogging
     }
 
     @Override
+    public void info(@NonNull final String msg, @NonNull final Throwable error) {
+        log(msg, error, new LoggingInfoCall());
+    }
+
+    @Override
+    public void info(@NonNull final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        log(category, msg, error, new LoggingInfoCall());
+    }
+
+    @Override
     public boolean isInfoEnabled() {
         return isEnabled(new LoggingInfoCall());
     }
@@ -326,6 +415,16 @@ public class CompositeLogging
     }
 
     @Override
+    public void debug(@NonNull final String msg, @NonNull final Throwable error) {
+        log(msg, error, new LoggingDebugCall());
+    }
+
+    @Override
+    public void debug(@NonNull final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        log(category, msg, error, new LoggingDebugCall());
+    }
+
+    @Override
     public boolean isDebugEnabled() {
         return isEnabled(new LoggingDebugCall());
     }
@@ -357,6 +456,16 @@ public class CompositeLogging
     @Override
     public void trace(@NonNull final String category, @NonNull final String msg) {
         log(category, msg, new LoggingTraceCall());
+    }
+
+    @Override
+    public void trace(@NonNull final String msg, @NonNull final Throwable error) {
+        log(msg, error, new LoggingTraceCall());
+    }
+
+    @Override
+    public void trace(@NonNull final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        log(category, msg, error, new LoggingTraceCall());
     }
 
     @Override

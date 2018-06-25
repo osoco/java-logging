@@ -46,6 +46,12 @@ public class JulLoggingAdapter
     }
 
     @Override
+    protected void logError(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logError(category, msg);
+        retrieveLogger(category).severe(toString(error));
+    }
+
+    @Override
     public boolean isWarnEnabled(@Nullable final String category) {
         return retrieveLogger(category).isLoggable(Level.WARNING);
     }
@@ -57,6 +63,12 @@ public class JulLoggingAdapter
     @Override
     protected void logWarn(@Nullable final String category, @NonNull final String msg) {
         retrieveLogger(category).warning(msg);
+    }
+
+    @Override
+    protected void logWarn(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logWarn(category, msg);
+        retrieveLogger(category).warning(toString(error));
     }
 
     @Override
@@ -74,6 +86,12 @@ public class JulLoggingAdapter
     }
 
     @Override
+    protected void logInfo(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logInfo(category, msg);
+        retrieveLogger(category).info(toString(error));
+    }
+
+    @Override
     public void setDebugEnabled(@Nullable final String category, final boolean flag) {
     }
 
@@ -88,6 +106,12 @@ public class JulLoggingAdapter
     }
 
     @Override
+    protected void logDebug(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logDebug(category, msg);
+        retrieveLogger(category).fine(toString(error));
+    }
+
+    @Override
     public void setTraceEnabled(@Nullable final String category, final boolean flag) {
     }
 
@@ -99,5 +123,11 @@ public class JulLoggingAdapter
     @Override
     protected void logTrace(@Nullable final String category, @NonNull final String msg) {
         retrieveLogger(category).finer(msg);
+    }
+
+    @Override
+    protected void logTrace(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logTrace(category, msg);
+        retrieveLogger(category).finer(toString(error));
     }
 }

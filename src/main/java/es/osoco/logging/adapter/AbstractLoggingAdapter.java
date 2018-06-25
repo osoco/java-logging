@@ -481,12 +481,34 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
         }
     }
 
+    @Override
+    public void error(@NonNull final String msg, @NonNull final Throwable error) {
+        if (isErrorEnabled()) {
+            logError(retrieveDefaultCategory(), msg, error);
+        }
+    }
+
+    @Override
+    public void error(@NonNull final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        if (isErrorEnabled(category)) {
+            logError(category, msg, error);
+        }
+    }
+
     /**
      * Logs an "error" message in given category.
      * @param category the category.
      * @param msg the message.
      */
     protected abstract void logError(@Nullable String category, @NonNull String msg);
+
+    /**
+     * Logs an "error" error in given category.
+     * @param category the category.
+     * @param msg the message.
+     * @param error the error.
+     */
+    protected abstract void logError(@Nullable String category, @NonNull String msg, @NonNull Throwable error);
 
     @Override
     public void warn(@NonNull final String msg) {
@@ -502,12 +524,34 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
         }
     }
 
+    @Override
+    public void warn(@NonNull final String msg, @NonNull final Throwable error) {
+        if (isWarnEnabled()) {
+            logWarn(retrieveDefaultCategory(), msg, error);
+        }
+    }
+
+    @Override
+    public void warn(@NonNull final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        if (isWarnEnabled(category)) {
+            logWarn(category, msg, error);
+        }
+    }
+
     /**
      * Logs a "warn" message in given category.
      * @param category the category.
      * @param msg the message.
      */
     protected abstract void logWarn(@Nullable String category, @NonNull String msg);
+
+    /**
+     * Logs a "warn" error in given category.
+     * @param category the category.
+     * @param msg the message.
+     * @param error the error.
+     */
+    protected abstract void logWarn(@Nullable String category, @NonNull String msg, @NonNull Throwable error);
 
     @Override
     public void info(@NonNull final String msg) {
@@ -523,12 +567,34 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
         }
     }
 
+    @Override
+    public void info(@NonNull final String msg, @NonNull final Throwable error) {
+        if (isInfoEnabled()) {
+            logInfo(retrieveDefaultCategory(), msg, error);
+        }
+    }
+
+    @Override
+    public void info(@NonNull final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        if (isInfoEnabled(category)) {
+            logInfo(category, msg, error);
+        }
+    }
+
     /**
      * Logs an "info" message in given category.
      * @param category the category.
      * @param msg the message.
      */
     protected abstract void logInfo(@Nullable String category, @NonNull String msg);
+
+    /**
+     * Logs an "info" error in given category.
+     * @param category the category.
+     * @param msg the message.
+     * @param error the error.
+     */
+    protected abstract void logInfo(@Nullable String category, @NonNull String msg, @NonNull final Throwable error);
 
     @Override
     public void debug(@NonNull final String msg) {
@@ -544,12 +610,34 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
         }
     }
 
+    @Override
+    public void debug(@NonNull final String msg, @NonNull final Throwable error) {
+        if (isDebugEnabled()) {
+            logDebug(retrieveDefaultCategory(), msg, error);
+        }
+    }
+
+    @Override
+    public void debug(@NonNull String category, @NonNull final String msg, @NonNull final Throwable error) {
+        if (isDebugEnabled(category)) {
+            logDebug(category, msg, error);
+        }
+    }
+
     /**
      * Logs a "debug" message in given category.
      * @param category the category.
      * @param msg the message.
      */
     protected abstract void logDebug(@Nullable String category, @NonNull String msg);
+
+    /**
+     * Logs a "debug" error in given category.
+     * @param category the category.
+     * @param msg the message.
+     * @param error the error.
+     */
+    protected abstract void logDebug(@Nullable String category, @NonNull String msg, @NonNull final Throwable error);
 
     @Override
     public void trace(@NonNull final String msg) {
@@ -565,12 +653,34 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
         }
     }
 
+    @Override
+    public void trace(@NonNull final String msg, @NonNull final Throwable error) {
+        if (isTraceEnabled()) {
+            logTrace(retrieveDefaultCategory(), msg, error);
+        }
+    }
+
+    @Override
+    public void trace(@NonNull final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        if (isTraceEnabled(category)) {
+            logTrace(category, msg, error);
+        }
+    }
+
     /**
      * Logs a "trace" message in given category.
      * @param category the category.
      * @param msg the message.
      */
     protected abstract void logTrace(@Nullable String category, @NonNull String msg);
+
+    /**
+     * Logs a "trace" error in given category.
+     * @param category the category.
+     * @param msg the message.
+     * @param error the error.
+     */
+    protected abstract void logTrace(@Nullable String category, @NonNull String msg, @NonNull Throwable error);
 
     /**
      * Builds a message prefix based on given category.
@@ -583,5 +693,30 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
     @NonNull
     protected String buildCategoryPrefix(@Nullable final String category) {
         return (category == null) ? "" : "[" + category + "]:";
+    }
+
+    /**
+     * Converts given error to a string.
+     * @param error the error.
+     * @return the text.
+     */
+    @NonNull
+    protected String toString(@NonNull final Throwable error) {
+        @NonNull final StringBuilder result = new StringBuilder();
+
+        @Nullable Throwable cause = error;
+
+        do {
+            for (@NonNull final StackTraceElement trace : cause.getStackTrace()) {
+                result.append(trace.toString());
+                result.append("\n");
+            }
+            cause = cause.getCause();
+            if (cause != null) {
+                result.append("Caused by:\n");
+            }
+        } while (cause != null);
+
+        return result.toString();
     }
 }

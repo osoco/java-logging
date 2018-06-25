@@ -42,34 +42,66 @@ public class PrintStreamLoggingAdapter
 
     /**
      * Logs to the underlying {@link PrintStream}.
+     * @param category the category.
      * @param msg the message to log.
+     * @param error the error (optional).
      */
-    protected void logToPrintStream(@Nullable final String category, @NonNull final String msg) {
-        getLoggingConfiguration().getPrintStream().println(buildCategoryPrefix(category) + msg);
+    protected void logToPrintStream(
+        @Nullable final String category, @NonNull final String msg, @Nullable final Throwable error) {
+        @NonNull final PrintStream stream = getLoggingConfiguration().getPrintStream();
+        stream.println(buildCategoryPrefix(category) + msg);
+        if (error != null) {
+            error.printStackTrace(stream);
+        }
     }
 
     @Override
     protected void logError(@Nullable final String category, @NonNull final String msg) {
-        logToPrintStream(category, msg);
+        logToPrintStream(category, msg, null);
+    }
+
+    @Override
+    protected void logError(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logToPrintStream(category, msg, error);
     }
 
     @Override
     protected void logWarn(@Nullable final String category, @NonNull final String msg) {
-        logToPrintStream(category, msg);
+        logToPrintStream(category, msg, null);
+    }
+
+    @Override
+    protected void logWarn(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logToPrintStream(category, msg, error);
     }
 
     @Override
     protected void logInfo(@Nullable final String category, @NonNull final String msg) {
-        logToPrintStream(category, msg);
+        logToPrintStream(category, msg, null);
+    }
+
+    @Override
+    protected void logInfo(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logToPrintStream(category, msg, error);
     }
 
     @Override
     protected void logDebug(@Nullable final String category, @NonNull final String msg) {
-        logToPrintStream(category, msg);
+        logToPrintStream(category, msg, null);
+    }
+
+    @Override
+    protected void logDebug(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logToPrintStream(category, msg, error);
     }
 
     @Override
     protected void logTrace(@Nullable final String category, @NonNull final String msg) {
-        logToPrintStream(category, msg);
+        logToPrintStream(category, msg, null);
+    }
+
+    @Override
+    protected void logTrace(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logToPrintStream(category, msg, error);
     }
 }

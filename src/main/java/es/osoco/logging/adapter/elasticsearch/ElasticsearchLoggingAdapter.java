@@ -20,6 +20,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.elasticsearch.client.Response;
@@ -64,6 +65,7 @@ public class ElasticsearchLoggingAdapter
      * Specifies the Rest client.
      * @param client such instance.
      */
+    @EnsuresNonNull("restClient")
     protected final void immutableSetRestClient(@NonNull final RestClient client) {
         this.restClient = client;
     }
@@ -127,31 +129,66 @@ public class ElasticsearchLoggingAdapter
 
     @Override
     protected void logError(@Nullable final String category, @NonNull final String msg) {
-        logToElasticSearch(category, msg, getLoggingContext());
+        logToElasticSearch(category, msg, null, getLoggingContext());
+    }
+
+    @Override
+    protected void logError(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logToElasticSearch(category, msg, error, getLoggingContext());
     }
 
     @Override
     protected void logWarn(@Nullable final String category, @NonNull final String msg) {
-        logToElasticSearch(category, msg, getLoggingContext());
+        logToElasticSearch(category, msg, null, getLoggingContext());
+    }
+
+    @Override
+    protected void logWarn(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logToElasticSearch(category, msg, error, getLoggingContext());
     }
 
     @Override
     protected void logInfo(@Nullable final String category, @NonNull final String msg) {
-        logToElasticSearch(category, msg, getLoggingContext());
+        logToElasticSearch(category, msg, null, getLoggingContext());
+    }
+
+    @Override
+    protected void logInfo(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logToElasticSearch(category, msg, error, getLoggingContext());
     }
 
     @Override
     protected void logDebug(@Nullable final String category, @NonNull final String msg) {
-        logToElasticSearch(category, msg, getLoggingContext());
+        logToElasticSearch(category, msg, null, getLoggingContext());
+    }
+
+    @Override
+    protected void logDebug(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logToElasticSearch(category, msg, error, getLoggingContext());
     }
 
     @Override
     protected void logTrace(@Nullable final String category, @NonNull final String msg) {
-        logToElasticSearch(category, msg, getLoggingContext());
+        logToElasticSearch(category, msg, null, getLoggingContext());
     }
 
+    @Override
+    protected void logTrace(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        logToElasticSearch(category, msg, error, getLoggingContext());
+    }
+
+    /**
+     * Logs given info to ElasticSearch.
+     * @param category the category.
+     * @param msg the message.
+     * @param error the error (optional).
+     * @param ctx the {@link LoggingContext}.
+     */
     protected void logToElasticSearch(
-        @Nullable final String category, @NonNull final String msg, @NonNull final LoggingContext ctx) {
+        @Nullable final String category,
+        @NonNull final String msg,
+        @Nullable final Throwable error,
+        @NonNull final LoggingContext ctx) {
         @NonNull RestClient restClient = getRestClient();
 
         final long id = System.currentTimeMillis() / 1000;
@@ -204,6 +241,12 @@ public class ElasticsearchLoggingAdapter
         data.append("\",\n    \"timestamp\": \"");
         data.append(TIMESTAMP_FORMATTER.format(now));
         data.append("\"\n}");
+
+        if (error != null) {
+            data.append(",\n    \"error\": \"");
+            data.append(escapeDoubleQuotes(toString(error)));
+            data.append("\"\n}");
+        }
 
         @NonNull final String content = data.toString();
 

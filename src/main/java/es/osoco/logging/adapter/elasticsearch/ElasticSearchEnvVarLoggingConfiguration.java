@@ -28,7 +28,7 @@ import lombok.ToString;
  * ElasticSearch configuration based on environment variables.
  */
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @SuppressWarnings("unused")
 public class ElasticSearchEnvVarLoggingConfiguration
     extends AbstractLoggingConfiguration

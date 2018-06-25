@@ -35,9 +35,14 @@ public class Slf4jLoggingAdapter
     private Map<String, Object> loggerMapping = new HashMap<>();
 
     /**
-     * A mapping between category and error methods.
+     * A mapping between category and logging methods.
      */
     private Map<String, Map<String, Method>> methodMapping = new HashMap<>();
+
+    /**
+     * A mapping between category and methods with Throwable parameters.
+     */
+    private Map<String, Map<String, Method>> methodWithThrowableMapping = new HashMap<>();
 
     /**
      * Creates a new adapter.
@@ -90,8 +95,8 @@ public class Slf4jLoggingAdapter
     }
 
     /**
-     * Retrieves the logger mapping.
-     * @return mapping the mapping.
+     * Retrieves the mapping for the default log method.
+     * @return category the category.
      */
     @NonNull
     protected Map<String, Method> retrieveMethodMapping(@NonNull final String category) {
@@ -101,6 +106,25 @@ public class Slf4jLoggingAdapter
         if (existing == null) {
             result = new HashMap<>();
             methodMapping.put(category, result);
+        } else {
+            result = existing;
+        }
+
+        return result;
+    }
+
+    /**
+     * Retrieves the mapping for the method accepting a Throwable parameter.
+     * @return category the category.
+     */
+    @NonNull
+    protected Map<String, Method> retrieveMethodWithThrowableMapping(@NonNull final String category) {
+        @NonNull final Map<String, Method> result;
+        @Nullable final Map<String, Method> existing = methodWithThrowableMapping.get(category);
+
+        if (existing == null) {
+            result = new HashMap<>();
+            methodWithThrowableMapping.put(category, result);
         } else {
             result = existing;
         }
@@ -198,7 +222,10 @@ public class Slf4jLoggingAdapter
      * @param msg the message to throw.
      * @throws Throwable if any error occurs.
      */
-    protected void log(@NonNull final String level, @Nullable final String category, @NonNull final String msg)
+    protected void log(
+        @NonNull final String level,
+        @Nullable final String category,
+        @NonNull final String msg)
         throws Throwable {
         @Nullable Method method = retrieveMethodMapping(category).get(level);
 
@@ -219,10 +246,52 @@ public class Slf4jLoggingAdapter
         }
     }
 
+    /**
+     * Logs a message using a certain level, in given category.
+     * @param level the log level (corresponds to Logger method names).
+     * @param category the category.
+     * @param msg the message to throw.
+     * @param error the error.
+     * @throws Throwable if any error occurs.
+     */
+    protected void log(
+        @NonNull final String level,
+        @Nullable final String category,
+        @NonNull final String msg,
+        @NonNull final Throwable error)
+        throws Throwable {
+        @Nullable Method method = retrieveMethodWithThrowableMapping(category).get(level);
+
+        @Nullable final Object logger = retrieveLogger(category);
+
+        if (method == null) {
+
+            @Nullable final Class clazz = retrieveLoggerClass();
+
+            if (logger != null) {
+                method = clazz.getMethod(level, String.class, Throwable.class );
+                retrieveMethodWithThrowableMapping(category).put(level, method);
+            }
+        }
+
+        if (method != null) {
+            method.invoke(logger, msg, error);
+        }
+    }
+
     @Override
     protected void logError(@Nullable final String category, @NonNull final String msg) {
         try {
             log("error", category, msg);
+        } catch (@NonNull final Throwable throwable) {
+            super.setErrorEnabled(category, false);
+        }
+    }
+
+    @Override
+    protected void logError(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        try {
+            log("error", category, msg, error);
         } catch (@NonNull final Throwable throwable) {
             super.setErrorEnabled(category, false);
         }
@@ -238,9 +307,27 @@ public class Slf4jLoggingAdapter
     }
 
     @Override
+    protected void logWarn(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        try {
+            log("warn", category, msg, error);
+        } catch (@NonNull final Throwable throwable) {
+            super.setWarnEnabled(category, false);
+        }
+    }
+
+    @Override
     protected void logInfo(@Nullable final String category, @NonNull final String msg) {
         try {
             log("info", category, msg);
+        } catch (@NonNull final Throwable throwable) {
+            super.setInfoEnabled(category, false);
+        }
+    }
+
+    @Override
+    protected void logInfo(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        try {
+            log("info", category, msg, error);
         } catch (@NonNull final Throwable throwable) {
             super.setInfoEnabled(category, false);
         }
@@ -256,9 +343,27 @@ public class Slf4jLoggingAdapter
     }
 
     @Override
+    protected void logDebug(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        try {
+            log("debug", category, msg, error);
+        } catch (@NonNull final Throwable throwable) {
+            super.setDebugEnabled(category, false);
+        }
+    }
+
+    @Override
     protected void logTrace(@Nullable final String category, @NonNull final String msg) {
         try {
             log("trace", category, msg);
+        } catch (@NonNull final Throwable throwable) {
+            super.setTraceEnabled(category, false);
+        }
+    }
+
+    @Override
+    protected void logTrace(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        try {
+            log("trace", category, msg, error);
         } catch (@NonNull final Throwable throwable) {
             super.setTraceEnabled(category, false);
         }

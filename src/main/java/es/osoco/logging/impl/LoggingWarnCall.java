@@ -39,6 +39,20 @@ public class LoggingWarnCall
     }
 
     @Override
+    public void log(@NonNull final LoggingAdapter adapter, @NonNull final String msg, @NonNull final Throwable error) {
+        adapter.warn(msg, error);
+    }
+
+    @Override
+    public void log(
+        @NonNull final LoggingAdapter adapter,
+        @NonNull final String category,
+        @NonNull final String msg,
+        @NonNull final Throwable error) {
+        adapter.warn(category, msg, error);
+    }
+
+    @Override
     public boolean isEnabled(@NonNull final LoggingAdapter adapter) {
         return adapter.isWarnEnabled();
     }

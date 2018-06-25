@@ -48,9 +48,27 @@ public class AwsLambdaLoggingAdapter
         getLoggingConfiguration().getLambdaLogger().log(buildCategoryPrefix(category) + msg);
     }
 
+    /**
+     * Logs an error message using the {@link LambdaLogger}.
+     * @param category the category.
+     * @param msg the message to log.
+     * @param error the error.
+     */
+    protected void log(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        @NonNull  final LambdaLogger logger = getLoggingConfiguration().getLambdaLogger();
+        @NonNull final String categoryPrefix = buildCategoryPrefix(category);
+        logger.log(categoryPrefix + msg);
+        logger.log(toString(error));
+    }
+
     @Override
     public void logError(@Nullable final String category, @NonNull final String msg) {
         log(category, msg);
+    }
+
+    @Override
+    public void logError(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        log(category, msg, error);
     }
 
     @Override
@@ -59,8 +77,18 @@ public class AwsLambdaLoggingAdapter
     }
 
     @Override
+    public void logWarn(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        log(category, msg, error);
+    }
+
+    @Override
     public void logInfo(@Nullable final String category, @NonNull final String msg) {
         log(category, msg);
+    }
+
+    @Override
+    public void logInfo(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        log(category, msg, error);
     }
 
     @Override
@@ -69,7 +97,17 @@ public class AwsLambdaLoggingAdapter
     }
 
     @Override
+    public void logDebug(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        log(category, msg, error);
+    }
+
+    @Override
     public void logTrace(@Nullable final String category, @NonNull final String msg) {
         log(category, msg);
+    }
+
+    @Override
+    public void logTrace(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        log(category, msg, error);
     }
 }

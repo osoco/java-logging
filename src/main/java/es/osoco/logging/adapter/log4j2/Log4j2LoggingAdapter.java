@@ -40,8 +40,18 @@ public class Log4j2LoggingAdapter
     }
 
     @Override
+    protected void logError(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        retrieveLogger(category).error(msg, error);
+    }
+
+    @Override
     protected void logWarn(@Nullable final String category, @NonNull final String msg) {
         retrieveLogger(category).warn(msg);
+    }
+
+    @Override
+    protected void logWarn(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        retrieveLogger(category).warn(msg, error);
     }
 
     @Override
@@ -50,12 +60,27 @@ public class Log4j2LoggingAdapter
     }
 
     @Override
+    protected void logInfo(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        retrieveLogger(category).info(msg, error);
+    }
+
+    @Override
     protected void logDebug(@Nullable final String category, @NonNull final String msg) {
         retrieveLogger(category).debug(msg);
     }
 
     @Override
+    protected void logDebug(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        retrieveLogger(category).debug(msg, error);
+    }
+
+    @Override
     protected void logTrace(@Nullable final String category, @NonNull final String msg) {
         retrieveLogger(category).trace(msg);
+    }
+
+    @Override
+    protected void logTrace(@Nullable final String category, @NonNull final String msg, @NonNull final Throwable error) {
+        retrieveLogger(category).trace(msg, error);
     }
 }

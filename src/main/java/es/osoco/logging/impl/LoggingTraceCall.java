@@ -39,6 +39,20 @@ public class LoggingTraceCall
     }
 
     @Override
+    public void log(@NonNull final LoggingAdapter adapter, @NonNull final String msg, @NonNull final Throwable error) {
+        adapter.trace(msg, error);
+    }
+
+    @Override
+    public void log(
+        @NonNull final LoggingAdapter adapter,
+        @NonNull final String category,
+        @NonNull final String msg,
+        @NonNull final Throwable error) {
+        adapter.trace(category, msg, error);
+    }
+
+    @Override
     public boolean isEnabled(@NonNull final LoggingAdapter adapter) {
         return adapter.isTraceEnabled();
     }

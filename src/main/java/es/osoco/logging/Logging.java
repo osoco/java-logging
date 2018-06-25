@@ -35,6 +35,21 @@ public interface Logging {
     void error(@NonNull String category, @NonNull String msg);
 
     /**
+     * Logs an "error" exception.
+     * @param msg the message.
+     * @param error the error.
+     */
+    void error(@NonNull String msg, @NonNull Throwable error);
+
+    /**
+     * Logs an "error" exception in given category.
+     * @param category the category.
+     * @param msg the message.
+     * @param error the error.
+     */
+    void error(@NonNull String category, @NonNull String msg, @NonNull Throwable error);
+
+    /**
      * Enables or disables the "error" level.
      * @param flag the flag.
      */
@@ -72,6 +87,21 @@ public interface Logging {
      * @param msg the message.
      */
     void warn(@NonNull String category, @NonNull String msg);
+
+    /**
+     * Logs a "warn" error.
+     * @param msg the message.
+     * @param error the error.
+     */
+    void warn(@NonNull String msg, @NonNull Throwable error);
+
+    /**
+     * Logs a "warn" error in given category.
+     * @param category the category.
+     * @param msg the message.
+     * @param error the error.
+     */
+    void warn(@NonNull String category, @NonNull String msg, @NonNull Throwable error);
 
     /**
      * Enables or disables the "warn" level.
@@ -113,6 +143,21 @@ public interface Logging {
     void info(@NonNull String category, @NonNull String msg);
 
     /**
+     * Logs an "info" error.
+     * @param msg the message.
+     * @param error the error.
+     */
+    void info(@NonNull String msg, @NonNull Throwable error);
+
+    /**
+     * Logs an "info" error in given category.
+     * @param category the category.
+     * @param msg the message.
+     * @param error the error.
+     */
+    void info(@NonNull String category, @NonNull String msg, @NonNull Throwable error);
+
+    /**
      * Enables or disables the "info" level.
      * @param flag the flag.
      */
@@ -152,6 +197,21 @@ public interface Logging {
     void debug(@NonNull String category, @NonNull String msg);
 
     /**
+     * Logs a "debug" error.
+     * @param msg the message.
+     * @param error the errorp
+     */
+    void debug(@NonNull String msg, @NonNull Throwable error);
+
+    /**
+     * Logs a "debug" error in given category.
+     * @param category the category.
+     * @param msg the message.
+     * @param error the error.
+     */
+    void debug(@NonNull String category, @NonNull String msg, @NonNull Throwable error);
+
+    /**
      * Enables or disables the "debug" level.
      * @param flag the flag.
      */
@@ -189,6 +249,21 @@ public interface Logging {
      * @param msg the message.
      */
     void trace(@NonNull String category, @NonNull String msg);
+
+    /**
+     * Logs a "trace" error.
+     * @param msg the message.
+     * @param error the errorp
+     */
+    void trace(@NonNull String msg, @NonNull Throwable error);
+
+    /**
+     * Logs a "trace" error in given category.
+     * @param category the category.
+     * @param msg the message.
+     * @param error the error.
+     */
+    void trace(@NonNull String category, @NonNull String msg, @NonNull Throwable error);
 
     /**
      * Enables or disables the "trace" level.

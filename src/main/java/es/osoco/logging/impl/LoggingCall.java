@@ -29,12 +29,29 @@ public interface LoggingCall {
     void log(@NonNull LoggingAdapter adapter, @NonNull String msg);
 
     /**
+     * Delegates the logging operation on given adapter.
+     * @param adapter the adapter.
+     * @param msg the message to log.
+     * @param error the error.
+     */
+    void log(@NonNull LoggingAdapter adapter, @NonNull String msg, @NonNull Throwable error);
+
+    /**
      * Delegates the logging operation on given adapter for given category.
      * @param adapter the adapter.
      * @param category the category.
      * @param msg the message to log.
      */
     void log(@NonNull LoggingAdapter adapter, @NonNull String category, @NonNull String msg);
+
+    /**
+     * Delegates the logging operation on given adapter for given category.
+     * @param adapter the adapter.
+     * @param category the category.
+     * @param msg the message to log.
+     * @param error the error.
+     */
+    void log(@NonNull LoggingAdapter adapter, @NonNull String category, @NonNull String msg, @NonNull Throwable error);
 
     /**
      * Delegates given adapter the responsibility to check whether a given log level is enabled.
