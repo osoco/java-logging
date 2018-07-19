@@ -70,7 +70,7 @@ import es.osoco.logging.LoggingFactory;
 
 Then, retrieve the `Logging` instance using the `LoggingFactory`:
 ```
-Logging logging = LogFactory.createLogging();
+Logging logging = LoggingFactory.createLogging();
 ```
 
 Once you have the `Logging` instance, use it for, well, logging:
@@ -81,7 +81,7 @@ logging.info("Use case started");
 ## Logging preferences
 
 While the underlying logging configuration is auto-discovered at runtime, you should
-specify your preferences. You do so by using the `@LoggingPreferences` annotation either in a method or a class.
+specify your preferences. You do so by using the `@LoggingPreferences` annotation either in a method or in a class.
 Your preferences will define which logging mechanism will be used, within the execution context they are defined.
 The general use case is to define your preferences in the application's entry point(s).
 That way, they'll "stick" to all the code running within that execution flow.
@@ -124,7 +124,7 @@ public class HttpServerAdapter implements ...
 }
 ```
 
-In this scenario, let's say you'd like to log differently depending on the adapter:  when the application receives messages from the RabbitMQ queue, you want to send the logs to a ElasticSearch server, whereas the Lambda should use the AWS-Lambda built-in logging mechanism itself.
+In this scenario, let's say you'd like to log differently depending on the adapter:  when the application receives messages from the RabbitMQ queue, you want to send the logs to an ElasticSearch server, whereas the Lambda should use the AWS-Lambda built-in logging mechanism itself.
 
 You can accomplish that using `@LoggingPreferences` annotations:
 ```
@@ -143,7 +143,7 @@ This library uses two concepts: Logging Configuration, and Logging Adapters. Log
 
 ## Logging Configuration
 
-Logging Configurations are responsible to provide whatever information is needed for a Logging Adapter to work correctly. It includes file paths, remote server IPs and ports, and so on. They include the necessary checks as well. For example, file permissions, if the remote servers are up and running, etc.
+Logging Configurations are responsible for providing whatever information is needed for a Logging Adapter to work correctly. It includes file paths, remote server IPs and ports, and so on. They include the necessary checks as well. For example, file permissions, if the remote servers are up and running, etc.
 
 Logging Configurations can be explicitly defined, and automatically discovered.
 
