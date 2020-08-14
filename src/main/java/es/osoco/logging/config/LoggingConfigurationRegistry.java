@@ -62,7 +62,7 @@ public class LoggingConfigurationRegistry {
      * The default behavior for automatically discovering of logging configurations.
      */
     @NonNull
-    public static final boolean DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS = true;
+    public static final boolean DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATIONS = false;
 
     /**
      * The property to enable or disable automatically discovering of logging configuration producers.
@@ -82,7 +82,7 @@ public class LoggingConfigurationRegistry {
      * The default behavior for automatically discovering of logging configuration producers.
      */
     @NonNull
-    public static final boolean DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS = true;
+    public static final boolean DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_CONFIGURATION_PRODUCERS = false;
 
     /**
      * The underlying logging configuration map.

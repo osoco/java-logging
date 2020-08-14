@@ -70,7 +70,7 @@ public class LoggingPrefs {
     /**
      * The default behavior for automatically discovering of logging annotations.
      */
-    public static final boolean DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS = true;
+    public static final boolean DEFAULT_AUTOMATICALLY_DISCOVER_LOGGING_ANNOTATIONS = false;
 
     /**
      * The property to override the preferred logging mechanism.
