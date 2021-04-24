@@ -193,7 +193,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>[4.13.1,)</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -389,7 +389,7 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
-      <plugin>
+      <!--plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
         <version>1.5</version>
@@ -405,8 +405,8 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
+      </plugin-->
+      <!--plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
         <version>1.6.7</version>
@@ -416,24 +416,29 @@
           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
-      </plugin>
-      <plugin>
+      </plugin-->
+      <!--plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.18</version>
         <configuration>
           <includes>
-            <!-- By default only files ending in 'Test' will be included, so also include support for Spock style naming convention -->
+            <!- - By default only files ending in 'Test' will be included, so also include support for Spock style naming convention -->
             <!-- Oddly enough for Groovy files, *Spec.groovy does not work, but *Spec.java does -->
-            <include>**/*Test.java</include>
+            <!--include>**/*Test.java</include>
             <include>**/*Specification.java</include>
           </includes>
         </configuration>
-      </plugin>
+      </plugin-->
     </plugins>
   </build>
 
   <repositories>
+    <repository>
+        <id>jcenter</id>
+        <name>jcenter</name>
+        <url>https://jcenter.bintray.com</url>
+    </repository>
     <!--repository>
       <id>osoco-snapshots</id>
       <name>OSOCO Snapshots</name>
@@ -441,7 +446,7 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository-->
+    </repository>
     <repository>
       <id>osoco-releases</id>
       <name>OSOCO Releases</name>
@@ -449,12 +454,12 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository>
+    </repository-->
 
   </repositories>
 
   <pluginRepositories>
-    <pluginRepository>
+    <!--pluginRepository>
       <id>osoco-plugin-snapshots</id>
       <name>OSOCO Plugin Snapshots</name>
       <url>https://nexus.osoco.es/repository/maven-snapshots</url>
@@ -469,8 +474,7 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-    </pluginRepository>
-
+    </pluginRepository-->
   </pluginRepositories>
 
   <distributionManagement>
