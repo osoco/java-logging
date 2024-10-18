@@ -17,7 +17,7 @@ package es.osoco.logging.adapter;
 import es.osoco.logging.LoggingContext;
 import es.osoco.logging.config.LoggingConfiguration;
 import es.osoco.logging.impl.ThreadLocalLoggingContext;
-import me.nallar.whocalled.WhoCalled;
+//import me.nallar.whocalled.WhoCalled;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -446,11 +446,11 @@ public abstract class AbstractLoggingAdapter<LC extends LoggingConfiguration>
 
         for (int i=1; ; i++) {
             try {
-                @NonNull final String aux = WhoCalled.$.getCallingClass(i).getName();
+               /* @NonNull final String aux = WhoCalled.$.getCallingClass(i).getName();
                 if (validCategory(aux)) {
                     result = aux;
                     break;
-                }
+                }*/
             } catch (@NonNull final Throwable throwable) {
                 break;
             }
